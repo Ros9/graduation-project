@@ -1,16 +1,20 @@
 package controller
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+	"graduation-project/challange-api/service"
+)
 
 type UserController interface {
 	CreateUser() gin.HandlerFunc
 }
 
 type userController struct {
+	userService service.UserService
 }
 
-func NewUserController() UserController {
-	return &userController{}
+func NewUserController(userService service.UserService) UserController {
+	return &userController{userService}
 }
 
 func (uc *userController) CreateUser() gin.HandlerFunc {
