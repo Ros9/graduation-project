@@ -2,7 +2,7 @@ package model
 
 type Challenge struct {
 	ID          string       `json:"id"`
-	SponsorId   string       `json:"sponsor_id"`
+	CompanyID   string       `json:"company_id"`
 	Title       string       `json:"title"`
 	Description string       `json:"description"`
 	AnswerCode  string       `json:"answer_code"`
