@@ -2,11 +2,15 @@ package controller
 
 import (
 	"github.com/gin-gonic/gin"
-	"graduation-project/challange-api/service"
+	"graduation-project/challenge-api/service"
 )
 
 type UserController interface {
 	CreateUser() gin.HandlerFunc
+	GetUser() gin.HandlerFunc
+	GetUserList() gin.HandlerFunc
+	UpdateUser() gin.HandlerFunc
+	DeleteUser() gin.HandlerFunc
 }
 
 type userController struct {
@@ -30,6 +34,18 @@ func (uc *userController) GetUser() gin.HandlerFunc {
 }
 
 func (uc *userController) GetUserList() gin.HandlerFunc {
+	return func(context *gin.Context) {
+
+	}
+}
+
+func (uc *userController) UpdateUser() gin.HandlerFunc {
+	return func(context *gin.Context) {
+
+	}
+}
+
+func (uc *userController) DeleteUser() gin.HandlerFunc {
 	return func(context *gin.Context) {
 
 	}

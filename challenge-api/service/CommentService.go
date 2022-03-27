@@ -2,7 +2,7 @@ package service
 
 import (
 	"github.com/google/uuid"
-	"graduation-project/challange-api/model"
+	"graduation-project/challenge-api/model"
 )
 
 type CommentService interface {

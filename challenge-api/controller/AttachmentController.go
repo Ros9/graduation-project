@@ -2,11 +2,12 @@ package controller
 
 import (
 	"github.com/gin-gonic/gin"
-	"graduation-project/challange-api/service"
+	"graduation-project/challenge-api/service"
 )
 
 type AttachmentController interface {
-	CreateAttachment() gin.HandlerFunc
+	UploadAttachment() gin.HandlerFunc
+	GetAttachment() gin.HandlerFunc
 }
 
 type attachmentController struct {
@@ -17,7 +18,13 @@ func NewAttachmentController(attachmentService service.AttachmentService) Attach
 	return &attachmentController{attachmentService}
 }
 
-func (cc *attachmentController) CreateAttachment() gin.HandlerFunc {
+func (cc *attachmentController) UploadAttachment() gin.HandlerFunc {
+	return func(context *gin.Context) {
+
+	}
+}
+
+func (cc *attachmentController) GetAttachment() gin.HandlerFunc {
 	return func(context *gin.Context) {
 
 	}

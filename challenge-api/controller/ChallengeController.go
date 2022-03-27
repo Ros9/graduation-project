@@ -3,8 +3,8 @@ package controller
 import (
 	"encoding/json"
 	"github.com/gin-gonic/gin"
-	"graduation-project/challange-api/model"
-	"graduation-project/challange-api/service"
+	"graduation-project/challenge-api/model"
+	"graduation-project/challenge-api/service"
 	"io/ioutil"
 )
 
@@ -12,6 +12,8 @@ type ChallengeController interface {
 	CreateChallenge() gin.HandlerFunc
 	GetChallenge() gin.HandlerFunc
 	GetChallenges() gin.HandlerFunc
+	UpdateChallenge() gin.HandlerFunc
+	DeleteChallenge() gin.HandlerFunc
 }
 
 type challengeController struct {
@@ -49,6 +51,18 @@ func (cc *challengeController) GetChallenge() gin.HandlerFunc {
 }
 
 func (cc *challengeController) GetChallenges() gin.HandlerFunc {
+	return func(context *gin.Context) {
+		context.JSON(200, nil)
+	}
+}
+
+func (cc *challengeController) UpdateChallenge() gin.HandlerFunc {
+	return func(context *gin.Context) {
+		context.JSON(200, nil)
+	}
+}
+
+func (cc *challengeController) DeleteChallenge() gin.HandlerFunc {
 	return func(context *gin.Context) {
 		context.JSON(200, nil)
 	}
