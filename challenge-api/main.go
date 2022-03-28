@@ -1,15 +1,28 @@
 package main
 
 import (
+	"database/sql"
 	"github.com/gin-gonic/gin"
+	_ "github.com/lib/pq"
+	"github.com/prometheus/common/log"
 	"graduation-project/challenge-api/controller"
+	"graduation-project/challenge-api/repository"
 	"graduation-project/challenge-api/service"
 )
 
 func main() {
 	router := gin.Default()
 
-	userService := service.NewUserService()
+	dbConnString := "postgres://ros9:password@ros9/ros9"
+
+	userRepositoryDB, err := sql.Open("postgres", dbConnString)
+	if err != nil {
+		log.Error(err.Error())
+	}
+
+	userRepository := repository.NewUserRepository(userRepositoryDB)
+
+	userService := service.NewUserService(userRepository)
 	companyService := service.NewCompanyService()
 	challengeService := service.NewChallengeService()
 	answerService := service.NewAnswerService()
