@@ -13,18 +13,21 @@ import (
 func main() {
 	router := gin.Default()
 
-	dbConnString := "postgres://ros9:password@ros9/ros9"
+	dbConnString := "postgres://ros9:ros9@localhost:5432/graduation_project"
 
-	userRepositoryDB, err := sql.Open("postgres", dbConnString)
+	dbConnection, err := sql.Open("postgres", dbConnString)
 	if err != nil {
 		log.Error(err.Error())
 	}
+	dbConnection.SetMaxOpenConns(10)
 
-	userRepository := repository.NewUserRepository(userRepositoryDB)
+	userRepository := repository.NewUserRepository(dbConnection)
+	companyRepository := repository.NewCompanyRepository(dbConnection)
+	challengeRepository := repository.NewChallengeRepository(dbConnection)
 
 	userService := service.NewUserService(userRepository)
-	companyService := service.NewCompanyService()
-	challengeService := service.NewChallengeService()
+	companyService := service.NewCompanyService(companyRepository)
+	challengeService := service.NewChallengeService(challengeRepository)
 	answerService := service.NewAnswerService()
 	commentService := service.NewCommentService()
 	attachmentService := service.NewAttachmentService()

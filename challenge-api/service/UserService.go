@@ -34,7 +34,11 @@ func (cs *userService) CreateUser(user *model.User) (*model.User, error) {
 }
 
 func (cs *userService) GetUser(userID string) (*model.User, error) {
-	return &model.User{}, nil
+	user, err := cs.userRepository.FindUserById(userID)
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
 }
 
 func (cs *userService) GetUsers() ([]*model.User, error) {

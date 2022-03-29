@@ -1,5 +1,7 @@
 package model
 
+import "time"
+
 type Challenge struct {
 	ID            string       `json:"id"`
 	CompanyID     string       `json:"company_id"`
@@ -10,6 +12,6 @@ type Challenge struct {
 	AttachmentIds []string     `json:"attachment_ids"`
 	Tags          []Tag        `json:"tags"`
 	Attachments   []Attachment `json:"attachments"`
-	StartDate     string       `json:"start_date"`
-	EndDate       string       `json:"end_date"`
+	StartDate     *time.Time   `json:"start_date"`
+	EndDate       *time.Time   `json:"end_date"`
 }

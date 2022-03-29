@@ -28,16 +28,16 @@ func (uc *userController) CreateUser() gin.HandlerFunc {
 	return func(context *gin.Context) {
 		jsonData, err := ioutil.ReadAll(context.Request.Body)
 		if err != nil {
-
+			context.JSON(404, err.Error())
 		}
 		user := &model.User{}
 		err = json.Unmarshal(jsonData, user)
 		if err != nil {
-
+			context.JSON(404, err.Error())
 		}
 		createdUser, err := uc.userService.CreateUser(user)
 		if err != nil {
-
+			context.JSON(404, err.Error())
 		}
 		context.JSON(200, createdUser)
 	}
@@ -48,7 +48,7 @@ func (uc *userController) GetUser() gin.HandlerFunc {
 		userId := context.Param("id")
 		user, err := uc.userService.GetUser(userId)
 		if err != nil {
-
+			context.JSON(404, err.Error())
 		}
 		context.JSON(200, user)
 	}
