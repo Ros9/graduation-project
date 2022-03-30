@@ -37,7 +37,7 @@ func NewChallengeRepository(db *sql.DB) ChallengeRepository {
 }
 
 func (cr *challengeRepository) CreateChallenge(challenge *model.Challenge) (*model.Challenge, error) {
-	row := cr.db.QueryRow("insert into challenges (id, company_id, title,description, answer_code, start_time, end_time) "+
+	row := cr.db.QueryRow("insert into challenges (id, company_id, title, description, answer_code, start_time, end_time) "+
 		"values ($1, $2, $3, $4, $5, $6, $7)",
 		&challenge.ID, &challenge.CompanyID, &challenge.Title, &challenge.Description, &challenge.AnswerCode, &challenge.StartDate, &challenge.EndDate)
 	if row.Err() != nil {

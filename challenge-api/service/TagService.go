@@ -3,6 +3,7 @@ package service
 import (
 	"github.com/google/uuid"
 	"graduation-project/challenge-api/model"
+	"graduation-project/challenge-api/repository"
 )
 
 type TagService interface {
@@ -12,25 +13,34 @@ type TagService interface {
 }
 
 type tagService struct {
+	tagRepository repository.TagRepository
 }
 
-func NewTagService() TagService {
-	return &tagService{}
+func NewTagService(tagRepository repository.TagRepository) TagService {
+	return &tagService{tagRepository}
 }
 
-func (cs *tagService) CreateTag(tag *model.Tag) (*model.Tag, error) {
+func (ts *tagService) CreateTag(tag *model.Tag) (*model.Tag, error) {
 	id, err := uuid.NewUUID()
 	if err != nil {
 		return nil, err
 	}
 	tag.ID = id.String()
+	createdTag, err := ts.tagRepository.CreateTag(tag)
+	if err != nil {
+		return nil, err
+	}
+	return createdTag, nil
+}
+
+func (ts *tagService) GetTag(tagID string) (*model.Tag, error) {
+	tag, err := ts.tagRepository.FindTagById(tagID)
+	if err != nil {
+		return nil, err
+	}
 	return tag, nil
 }
 
-func (cs *tagService) GetTag(tagID string) (*model.Tag, error) {
-	return &model.Tag{}, nil
-}
-
-func (cs *tagService) GetTags() ([]*model.Tag, error) {
+func (ts *tagService) GetTags() ([]*model.Tag, error) {
 	return []*model.Tag{}, nil
 }

@@ -3,6 +3,7 @@ package service
 import (
 	"github.com/google/uuid"
 	"graduation-project/challenge-api/model"
+	"graduation-project/challenge-api/repository"
 )
 
 type CommentService interface {
@@ -12,10 +13,11 @@ type CommentService interface {
 }
 
 type commentService struct {
+	commentRepository repository.CommentRepository
 }
 
-func NewCommentService() CommentService {
-	return &commentService{}
+func NewCommentService(commentRepository repository.CommentRepository) CommentService {
+	return &commentService{commentRepository}
 }
 
 func (cs *commentService) CreateComment(comment *model.Comment) (*model.Comment, error) {
@@ -24,11 +26,19 @@ func (cs *commentService) CreateComment(comment *model.Comment) (*model.Comment,
 		return nil, err
 	}
 	comment.ID = id.String()
-	return comment, nil
+	createdComment, err := cs.commentRepository.CreateComment(comment)
+	if err != nil {
+		return nil, err
+	}
+	return createdComment, nil
 }
 
 func (cs *commentService) GetComment(commentID string) (*model.Comment, error) {
-	return &model.Comment{}, nil
+	comment, err := cs.commentRepository.FindCommentById(commentID)
+	if err != nil {
+		return nil, err
+	}
+	return comment, nil
 }
 
 func (cs *commentService) GetComments() ([]*model.Comment, error) {

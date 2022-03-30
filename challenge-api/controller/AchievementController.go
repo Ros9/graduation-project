@@ -1,8 +1,11 @@
 package controller
 
 import (
+	"encoding/json"
 	"github.com/gin-gonic/gin"
+	"graduation-project/challenge-api/model"
 	"graduation-project/challenge-api/service"
+	"io/ioutil"
 )
 
 type AchievementController interface {
@@ -23,13 +26,31 @@ func NewAchievementController(achievementService service.AchievementService) Ach
 
 func (ac *achievementController) CreateAchievement() gin.HandlerFunc {
 	return func(context *gin.Context) {
-
+		jsonData, err := ioutil.ReadAll(context.Request.Body)
+		if err != nil {
+			context.JSON(500, err.Error())
+		}
+		achievement := &model.Achievement{}
+		err = json.Unmarshal(jsonData, achievement)
+		if err != nil {
+			context.JSON(404, err.Error())
+		}
+		createdAchievement, err := ac.achievementService.CreateAchievement(achievement)
+		if err != nil {
+			context.JSON(404, err.Error())
+		}
+		context.JSON(200, createdAchievement)
 	}
 }
 
 func (ac *achievementController) GetAchievement() gin.HandlerFunc {
 	return func(context *gin.Context) {
-
+		id := context.Param("id")
+		achievement, err := ac.achievementService.GetAchievement(id)
+		if err != nil {
+			context.JSON(404, err.Error())
+		}
+		context.JSON(200, achievement)
 	}
 }
 

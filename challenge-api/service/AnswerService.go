@@ -3,6 +3,7 @@ package service
 import (
 	"github.com/google/uuid"
 	"graduation-project/challenge-api/model"
+	"graduation-project/challenge-api/repository"
 )
 
 type AnswerService interface {
@@ -12,10 +13,11 @@ type AnswerService interface {
 }
 
 type answerService struct {
+	answerRepository repository.AnswerRepository
 }
 
-func NewAnswerService() AnswerService {
-	return &answerService{}
+func NewAnswerService(answerRepository repository.AnswerRepository) AnswerService {
+	return &answerService{answerRepository}
 }
 
 func (cs *answerService) CreateAnswer(answer *model.Answer) (*model.Answer, error) {
@@ -24,11 +26,19 @@ func (cs *answerService) CreateAnswer(answer *model.Answer) (*model.Answer, erro
 		return nil, err
 	}
 	answer.ID = id.String()
-	return answer, nil
+	createdAnswer, err := cs.answerRepository.CreateAnswer(answer)
+	if err != nil {
+		return nil, err
+	}
+	return createdAnswer, nil
 }
 
 func (cs *answerService) GetAnswer(answerId string) (*model.Answer, error) {
-	return &model.Answer{}, nil
+	answer, err := cs.answerRepository.FindAnswerById(answerId)
+	if err != nil {
+		return nil, err
+	}
+	return answer, nil
 }
 
 func (cs *answerService) GetAnswers() ([]*model.Answer, error) {
