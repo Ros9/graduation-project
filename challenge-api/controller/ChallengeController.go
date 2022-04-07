@@ -2,7 +2,6 @@ package controller
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"graduation-project/challenge-api/model"
 	"graduation-project/challenge-api/service"
@@ -34,7 +33,6 @@ func (cc *challengeController) CreateChallenge() gin.HandlerFunc {
 		challenge := &model.Challenge{}
 		err = json.Unmarshal(jsonData, challenge)
 		if err != nil {
-			fmt.Println("HERE")
 			context.JSON(404, err.Error())
 		}
 		createdChallenge, err := cc.challengeService.CreateChallenge(challenge)

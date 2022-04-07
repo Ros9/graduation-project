@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fmt"
 	"github.com/google/uuid"
 	"graduation-project/challenge-api/model"
 	"graduation-project/challenge-api/repository"
@@ -13,11 +14,19 @@ type UserService interface {
 }
 
 type userService struct {
-	userRepository repository.UserRepository
+	userRepository            repository.UserRepository
+	usersChallengesRepository repository.UsersChallengesRepository
+	challengeRepository       repository.ChallengeRepository
 }
 
-func NewUserService(userRepository repository.UserRepository) UserService {
-	return &userService{userRepository}
+func NewUserService(userRepository repository.UserRepository,
+	usersChallengesRepository repository.UsersChallengesRepository,
+	challengeRepository repository.ChallengeRepository) UserService {
+	return &userService{
+		userRepository,
+		usersChallengesRepository,
+		challengeRepository,
+	}
 }
 
 func (cs *userService) CreateUser(user *model.User) (*model.User, error) {
@@ -37,6 +46,19 @@ func (cs *userService) GetUser(userID string) (*model.User, error) {
 	user, err := cs.userRepository.FindUserById(userID)
 	if err != nil {
 		return nil, err
+	}
+	ucs, err := cs.usersChallengesRepository.FindChallengesByUserId(user.ID)
+	fmt.Println()
+	for _, value := range ucs {
+		fmt.Println(value)
+	}
+	fmt.Println()
+	for _, uc := range ucs {
+		userChallenge, err := cs.challengeRepository.FindChallengeById(uc.ChallengeId)
+		if err != nil {
+			fmt.Println("err =", err.Error())
+		}
+		user.Challenges = append(user.Challenges, userChallenge)
 	}
 	return user, nil
 }

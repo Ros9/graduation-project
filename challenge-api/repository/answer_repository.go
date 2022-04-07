@@ -35,8 +35,8 @@ func NewAnswerRepository(db *sql.DB) AnswerRepository {
 }
 
 func (ar *answerRepository) CreateAnswer(answer *model.Answer) (*model.Answer, error) {
-	row := ar.db.QueryRow("insert into companies (id, user_id, challenge_id, answer, status) "+
-		"values ($1, $2, $3, $4, $5)", &answer.ID, &answer.UserID, &answer.ChallengeID, &answer.Answer, &answer.Status)
+	row := ar.db.QueryRow("insert into answers (id, user_id, challenge_id, answer) "+
+		"values ($1, $2, $3, $4)", &answer.ID, &answer.UserID, &answer.ChallengeID, &answer.Answer)
 	if row.Err() != nil {
 		return nil, row.Err()
 	}

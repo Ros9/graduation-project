@@ -55,3 +55,30 @@ func (cr *challengeRepository) FindChallengeById(challengeId string) (*model.Cha
 	}
 	return challenge, nil
 }
+
+func (cr *challengeRepository) FindChallenges(params map[string]interface{}) []model.Challenge {
+	//cnt := 0
+	//query := ""
+	//values := []interface{}{}
+	challenges := []model.Challenge{}
+	//if companyId, ok := params["company_id"]; ok {
+	//	cnt++
+	//	query = query + " company_id = $" + strconv.Itoa(cnt)
+	//	values = append(values, companyId)
+	//}
+	//rows, err := cr.db.Query("", "")
+	//for {
+	//	if rows.Err() != nil {
+	//		break
+	//	}
+	//	rows.Next()
+	//	challenge := model.Challenge{}
+	//	err = rows.Scan(&challenge.ID, &challenge.CompanyID, &challenge.Title, &challenge.Description, &challenge.AnswerCode,
+	//		&challenge.StartDate, &challenge.EndDate)
+	//	if err != nil {
+	//		break
+	//	}
+	//	challenges = append(challenges, challenge)
+	//}
+	return challenges
+}
