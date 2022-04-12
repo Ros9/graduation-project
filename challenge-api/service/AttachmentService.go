@@ -1,9 +1,12 @@
 package service
 
 import (
+	"fmt"
 	"github.com/google/uuid"
 	"graduation-project/challenge-api/model"
 	"graduation-project/challenge-api/repository"
+	"io"
+	"os"
 )
 
 type AttachmentService interface {
@@ -30,6 +33,17 @@ func (as *attachmentService) CreateAttachment(attachment *model.Attachment) (*mo
 	if err != nil {
 		return nil, err
 	}
+	out, err := os.Create(attachment.ID)
+	if err != nil {
+		fmt.Println("error =", err.Error())
+		return nil, err
+	}
+	defer out.Close()
+	_, err = io.Copy(out, *attachment.File)
+	if err != nil {
+		fmt.Println("error =", err.Error())
+	}
+	createdAttachment.File = attachment.File
 	return createdAttachment, nil
 }
 

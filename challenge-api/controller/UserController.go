@@ -5,7 +5,9 @@ import (
 	"github.com/gin-gonic/gin"
 	"graduation-project/challenge-api/model"
 	"graduation-project/challenge-api/service"
+	"graduation-project/challenge-api/utils"
 	"io/ioutil"
+	"strings"
 )
 
 type UserController interface {
@@ -14,6 +16,7 @@ type UserController interface {
 	GetUserList() gin.HandlerFunc
 	UpdateUser() gin.HandlerFunc
 	DeleteUser() gin.HandlerFunc
+	GetUserInfo() gin.HandlerFunc
 }
 
 type userController struct {
@@ -69,5 +72,30 @@ func (uc *userController) UpdateUser() gin.HandlerFunc {
 func (uc *userController) DeleteUser() gin.HandlerFunc {
 	return func(context *gin.Context) {
 
+	}
+}
+
+func (uc *userController) GetUserInfo() gin.HandlerFunc {
+	return func(context *gin.Context) {
+		token := context.GetHeader("Authorization")
+		if token == "" {
+			context.JSON(403, "token is empty")
+			return
+		}
+		tokenParts := strings.Split(token, " ")
+		if len(tokenParts) != 2 {
+			context.JSON(403, "token is incorrect")
+			return
+		}
+		userId, err := utils.ParseToken(tokenParts[1], []byte("qwerty12345"))
+		if err != nil {
+			context.JSON(403, err.Error())
+			return
+		}
+		user, err := uc.userService.GetUser(userId)
+		if err != nil {
+			context.JSON(404, err.Error())
+		}
+		context.JSON(200, user)
 	}
 }

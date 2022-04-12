@@ -1,15 +1,18 @@
 package service
 
 import (
+	"errors"
 	"github.com/google/uuid"
 	"graduation-project/challenge-api/model"
 	"graduation-project/challenge-api/repository"
+	"graduation-project/challenge-api/utils"
 )
 
 type CompanyService interface {
 	CreateCompany(answer *model.Company) (*model.Company, error)
 	GetCompany(companyId string) (*model.Company, error)
 	GetCompanies() ([]*model.Company, error)
+	GetTokenForCompany(login, password string) (string, error)
 }
 
 type companyService struct {
@@ -43,4 +46,15 @@ func (cs *companyService) GetCompany(companyID string) (*model.Company, error) {
 
 func (cs *companyService) GetCompanies() ([]*model.Company, error) {
 	return []*model.Company{}, nil
+}
+
+func (cs *companyService) GetTokenForCompany(login, password string) (string, error) {
+	company, err := cs.companyRepository.FindCompanyByLogin(login)
+	if err != nil {
+		return "", err
+	}
+	if company.Password != password {
+		return "", errors.New("invalid company or password")
+	}
+	return utils.GetToken(company.ID)
 }

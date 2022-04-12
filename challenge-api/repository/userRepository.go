@@ -10,6 +10,7 @@ type UserRepository interface {
 	CreateUser(user *model.User) (*model.User, error)
 	FindUserById(userId string) (*model.User, error)
 	FindUsers() ([]*model.User, error)
+	FindUserByLogin(login string) (*model.User, error)
 }
 
 type userRepository struct {
@@ -58,4 +59,14 @@ func (ur *userRepository) FindUserById(userId string) (*model.User, error) {
 
 func (ur *userRepository) FindUsers() ([]*model.User, error) {
 	return nil, nil
+}
+
+func (ur *userRepository) FindUserByLogin(login string) (*model.User, error) {
+	user := &model.User{}
+	err := ur.db.QueryRow("select * from users where login = $1", &login).
+		Scan(&user.ID, &user.Login, &user.Email, &user.Name, &user.Surname, &user.Password, &user.Telegram)
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
 }

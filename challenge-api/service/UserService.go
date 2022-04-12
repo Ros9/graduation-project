@@ -1,16 +1,19 @@
 package service
 
 import (
+	"errors"
 	"fmt"
 	"github.com/google/uuid"
 	"graduation-project/challenge-api/model"
 	"graduation-project/challenge-api/repository"
+	"graduation-project/challenge-api/utils"
 )
 
 type UserService interface {
 	CreateUser(user *model.User) (*model.User, error)
 	GetUser(userID string) (*model.User, error)
 	GetUsers() ([]*model.User, error)
+	GetTokenForUser(login, password string) (string, error)
 }
 
 type userService struct {
@@ -65,4 +68,15 @@ func (cs *userService) GetUser(userID string) (*model.User, error) {
 
 func (cs *userService) GetUsers() ([]*model.User, error) {
 	return []*model.User{}, nil
+}
+
+func (cs *userService) GetTokenForUser(login, password string) (string, error) {
+	user, err := cs.userRepository.FindUserByLogin(login)
+	if err != nil {
+		return "", err
+	}
+	if user.Password != password {
+		return "", errors.New("invalid user or password")
+	}
+	return utils.GetToken(user.ID)
 }

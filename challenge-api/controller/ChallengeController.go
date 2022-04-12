@@ -5,7 +5,9 @@ import (
 	"github.com/gin-gonic/gin"
 	"graduation-project/challenge-api/model"
 	"graduation-project/challenge-api/service"
+	"graduation-project/challenge-api/utils"
 	"io/ioutil"
+	"strings"
 )
 
 type ChallengeController interface {
@@ -26,6 +28,21 @@ func NewChallengeController(challengeService service.ChallengeService) Challenge
 
 func (cc *challengeController) CreateChallenge() gin.HandlerFunc {
 	return func(context *gin.Context) {
+		token := context.GetHeader("Authorization")
+		if token == "" {
+			context.JSON(403, "token is empty")
+			return
+		}
+		tokenParts := strings.Split(token, " ")
+		if len(tokenParts) != 2 {
+			context.JSON(403, "token is incorrect")
+			return
+		}
+		companyId, err := utils.ParseToken(tokenParts[1], []byte("qwerty12345"))
+		if err != nil {
+			context.JSON(403, err.Error())
+			return
+		}
 		jsonData, err := ioutil.ReadAll(context.Request.Body)
 		if err != nil {
 			context.JSON(500, err.Error())
@@ -35,6 +52,7 @@ func (cc *challengeController) CreateChallenge() gin.HandlerFunc {
 		if err != nil {
 			context.JSON(404, err.Error())
 		}
+		challenge.CompanyID = companyId
 		createdChallenge, err := cc.challengeService.CreateChallenge(challenge)
 		if err != nil {
 			context.JSON(404, err.Error())

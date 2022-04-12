@@ -1,11 +1,11 @@
 package controller
 
 import (
-	"encoding/json"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"graduation-project/challenge-api/model"
 	"graduation-project/challenge-api/service"
-	"io/ioutil"
+	"net/http"
 )
 
 type AttachmentController interface {
@@ -23,15 +23,13 @@ func NewAttachmentController(attachmentService service.AttachmentService) Attach
 
 func (ac *attachmentController) UploadAttachment() gin.HandlerFunc {
 	return func(context *gin.Context) {
-		jsonData, err := ioutil.ReadAll(context.Request.Body)
+		file, _, err := context.Request.FormFile("file")
 		if err != nil {
-			context.JSON(500, err.Error())
+			context.String(http.StatusBadRequest, fmt.Sprintf("file err : %s", err.Error()))
+			return
 		}
 		attachment := &model.Attachment{}
-		err = json.Unmarshal(jsonData, attachment)
-		if err != nil {
-			context.JSON(404, err.Error())
-		}
+		attachment.File = &file
 		createdAttachment, err := ac.attachmentService.CreateAttachment(attachment)
 		if err != nil {
 			context.JSON(404, err.Error())

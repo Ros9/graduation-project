@@ -2,12 +2,14 @@ package main
 
 import (
 	"database/sql"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
 	"github.com/prometheus/common/log"
 	"graduation-project/challenge-api/controller"
 	"graduation-project/challenge-api/repository"
 	"graduation-project/challenge-api/service"
+	"graduation-project/challenge-api/utils"
 )
 
 func main() {
@@ -51,8 +53,13 @@ func main() {
 	tagController := controller.NewTagController(tagService)
 	achievementController := controller.NewAchievementController(achievementService)
 	bonusController := controller.NewBonusController(bonusService)
+	authController := controller.NewAuthController(userService, companyService)
+
+	router.Handle("POST", "/auth/user", authController.GetUserToken())
+	router.Handle("POST", "/auth/company", authController.GetUserToken())
 
 	router.Handle("POST", "/user/register", userController.CreateUser())
+	router.Handle("GET", "/user/info", userController.GetUserInfo())
 	router.Handle("GET", "/user/:id", userController.GetUser())
 	router.Handle("GET", "/user", userController.GetUserList())
 	router.Handle("PUT", "/user/:id", userController.UpdateUser())
@@ -71,10 +78,10 @@ func main() {
 	router.Handle("DELETE", "/challenge/:id", challengeController.DeleteChallenge())
 
 	router.Handle("POST", "/answer", answerController.CreateAnswer())
-	router.Handle("GET", "/answer/:id", answerController.GetAnswer())
-	router.Handle("GET", "/answer", answerController.GetAnswers())
-	router.Handle("PUT", "/answer/:id", answerController.UpdateAnswer())
-	router.Handle("DELETE", "/answer/:id", answerController.DeleteAnswer())
+	//router.Handle("GET", "/answer/:id", answerController.GetAnswer())
+	//router.Handle("GET", "/answer", answerController.GetAnswers())
+	//router.Handle("PUT", "/answer/:id", answerController.UpdateAnswer())
+	//router.Handle("DELETE", "/answer/:id", answerController.DeleteAnswer())
 
 	router.Handle("POST", "/comment", commentController.CreateComment())
 	router.Handle("GET", "/comment/:id", commentController.GetComment())
@@ -102,6 +109,19 @@ func main() {
 	router.Handle("GET", "/bonus", bonusController.GetBonuses())
 	router.Handle("PUT", "/bonus/:id", bonusController.UpdateBonus())
 	router.Handle("DELETE", "/bonus/:id", bonusController.DeleteBonus())
+
+	token, err := utils.GetToken("Mukha")
+	if err != nil {
+		fmt.Println("err =", err.Error())
+	}
+	fmt.Println("token =", token)
+	fmt.Println()
+	fmt.Println()
+	name, err := utils.ParseToken(token, []byte("qwerty12345"))
+	if err != nil {
+		fmt.Println("err =", err.Error())
+	}
+	fmt.Println("name =", name)
 
 	router.Run(":8080")
 }

@@ -9,6 +9,7 @@ import (
 type CompanyRepository interface {
 	CreateCompany(company *model.Company) (*model.Company, error)
 	FindCompanyById(companyId string) (*model.Company, error)
+	FindCompanyByLogin(login string) (*model.Company, error)
 }
 
 type companyRepository struct {
@@ -19,6 +20,8 @@ func NewCompanyRepository(db *sql.DB) CompanyRepository {
 	preQueries := []string{
 		`create table companies (
 			id text,
+			login text,
+			password text,
 			name text,
 			description text,
 			email text
@@ -34,8 +37,8 @@ func NewCompanyRepository(db *sql.DB) CompanyRepository {
 }
 
 func (cr *companyRepository) CreateCompany(company *model.Company) (*model.Company, error) {
-	row := cr.db.QueryRow("insert into companies (id, name, description, email) "+
-		"values ($1, $2, $3, $4)", &company.ID, &company.Name, &company.Description, &company.Email)
+	row := cr.db.QueryRow("insert into companies (id, logn, password, name, description, email) "+
+		"values ($1, $2, $3, $4, $5, $6)", &company.ID, &company.Login, &company.Password, &company.Name, &company.Description, &company.Email)
 	if row.Err() != nil {
 		return nil, row.Err()
 	}
@@ -45,7 +48,17 @@ func (cr *companyRepository) CreateCompany(company *model.Company) (*model.Compa
 func (cr *companyRepository) FindCompanyById(companyId string) (*model.Company, error) {
 	company := &model.Company{}
 	err := cr.db.QueryRow("select * from companies where id = $1", &companyId).
-		Scan(&company.ID, &company.Name, &company.Description, &company.Email)
+		Scan(&company.ID, &company.Login, &company.Password, &company.Name, &company.Description, &company.Email)
+	if err != nil {
+		return nil, err
+	}
+	return company, nil
+}
+
+func (cr *companyRepository) FindCompanyByLogin(login string) (*model.Company, error) {
+	company := &model.Company{}
+	err := cr.db.QueryRow("select * from companies where login = $1", &login).
+		Scan(&company.ID, &company.Login, &company.Password, &company.Name, &company.Description, &company.Email)
 	if err != nil {
 		return nil, err
 	}
