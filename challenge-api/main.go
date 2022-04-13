@@ -114,8 +114,26 @@ func main() {
 	router.Handle("DELETE", "/bonus/:id", bonusController.DeleteBonus())
 
 	router.GET("/index", func(c *gin.Context) {
+		type Challenge struct {
+			Title       string
+			Description string
+		}
+		challenges := []Challenge{
+			{
+				Title:       "Almaty1",
+				Description: "About trains",
+			},
+			{
+				Title:       "Abay",
+				Description: "About kazakh poet",
+			},
+			{
+				Title:       "Something",
+				Description: "About something",
+			},
+		}
 		c.HTML(http.StatusOK, "index.html", gin.H{
-			"title": "Main website",
+			"challenges": challenges,
 		})
 	})
 
