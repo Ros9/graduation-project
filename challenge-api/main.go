@@ -10,10 +10,13 @@ import (
 	"graduation-project/challenge-api/repository"
 	"graduation-project/challenge-api/service"
 	"graduation-project/challenge-api/utils"
+	"net/http"
 )
 
 func main() {
 	router := gin.Default()
+	router.LoadHTMLGlob("templates/*")
+	router.Static("/assets", "./assets")
 
 	dbConnString := "postgres://ros9:ros9@localhost:5432/graduation_project"
 
@@ -58,14 +61,14 @@ func main() {
 	router.Handle("POST", "/auth/user", authController.GetUserToken())
 	router.Handle("POST", "/auth/company", authController.GetUserToken())
 
-	router.Handle("POST", "/user/register", userController.CreateUser())
+	router.Handle("POST", "/user/registration", userController.CreateUser())
 	router.Handle("GET", "/user/info", userController.GetUserInfo())
 	router.Handle("GET", "/user/:id", userController.GetUser())
 	router.Handle("GET", "/user", userController.GetUserList())
 	router.Handle("PUT", "/user/:id", userController.UpdateUser())
 	router.Handle("DELETE", "/user/:id", userController.DeleteUser())
 
-	router.Handle("POST", "/company", companyController.CreateCompany())
+	router.Handle("POST", "/company/registration", companyController.CreateCompany())
 	router.Handle("GET", "/company/:id", companyController.GetCompany())
 	router.Handle("GET", "/company", companyController.GetCompanies())
 	router.Handle("PUT", "/company/:id", companyController.UpdateCompany())
@@ -109,6 +112,12 @@ func main() {
 	router.Handle("GET", "/bonus", bonusController.GetBonuses())
 	router.Handle("PUT", "/bonus/:id", bonusController.UpdateBonus())
 	router.Handle("DELETE", "/bonus/:id", bonusController.DeleteBonus())
+
+	router.GET("/index", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "index.html", gin.H{
+			"title": "Main website",
+		})
+	})
 
 	token, err := utils.GetToken("Mukha")
 	if err != nil {
