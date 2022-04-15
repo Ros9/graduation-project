@@ -42,5 +42,5 @@ func (cs *challengeService) GetChallenge(challengeID string) (*model.Challenge, 
 }
 
 func (cs *challengeService) GetChallenges() ([]*model.Challenge, error) {
-	return []*model.Challenge{}, nil
+	return cs.challengeRepository.FindChallenges()
 }

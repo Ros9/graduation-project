@@ -76,7 +76,7 @@ func main() {
 
 	router.Handle("POST", "/challenge", challengeController.CreateChallenge())
 	router.Handle("GET", "/challenge/:id", challengeController.GetChallenge())
-	router.Handle("GET", "/challenge", challengeController.GetChallenges())
+	router.Handle("GET", "/challenges", challengeController.GetChallenges())
 	router.Handle("PUT", "/challenge/:id", challengeController.UpdateChallenge())
 	router.Handle("DELETE", "/challenge/:id", challengeController.DeleteChallenge())
 

@@ -85,32 +85,23 @@ func main() {
 	})
 
 	router.GET("/index", func(c *gin.Context) {
-		resp, err := httpClt.Get("http://localhost:8080/challenge")
+		url := "http://localhost:8080/challenges"
+		resp, err := httpClt.Get(url)
 		if err != nil {
 			fmt.Println("error =", err.Error())
+			return
 		}
 		body, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
 			fmt.Println("error =", err.Error())
+			return
 		}
 		fmt.Println("body =", string(body))
-		type Challenge struct {
-			Title       string
-			Description string
-		}
-		challenges := []Challenge{
-			{
-				Title:       "Almaty1",
-				Description: "About trains",
-			},
-			{
-				Title:       "Abay",
-				Description: "About kazakh poet",
-			},
-			{
-				Title:       "Something",
-				Description: "About something",
-			},
+		challenges := []model.Challenge{}
+		err = json.Unmarshal(body, &challenges)
+		if err != nil {
+			fmt.Println("error =", err.Error())
+			return
 		}
 		c.HTML(http.StatusOK, "index.html", gin.H{
 			"challenges": challenges,

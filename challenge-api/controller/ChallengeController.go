@@ -74,7 +74,11 @@ func (cc *challengeController) GetChallenge() gin.HandlerFunc {
 
 func (cc *challengeController) GetChallenges() gin.HandlerFunc {
 	return func(context *gin.Context) {
-		context.JSON(200, nil)
+		challenges, err := cc.challengeService.GetChallenges()
+		if err != nil {
+			context.JSON(404, err.Error())
+		}
+		context.JSON(200, challenges)
 	}
 }
 
