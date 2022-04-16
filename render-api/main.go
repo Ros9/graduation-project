@@ -48,10 +48,20 @@ func main() {
 			fmt.Println("error =", err.Error())
 			return
 		}
-		fmt.Println("body =", string(body))
-		token := string(body)
+		var token string
+		err = json.Unmarshal(body, &token)
+		if err != nil {
+			fmt.Print("error =", err.Error())
+			return
+		}
+		fmt.Println("token =", token)
 		context.SetCookie("session_token", token, 180, "/", "", true, true)
 		sessions[token] = Session{Username: name}
+		context.Redirect(301, "/index")
+	})
+
+	router.GET("/registration", func(context *gin.Context) {
+		context.HTML(200, "registration.html", gin.H{})
 	})
 
 	router.POST("/registration", func(context *gin.Context) {
@@ -84,7 +94,30 @@ func main() {
 		fmt.Println("body =", string(body))
 	})
 
-	router.GET("/index", func(c *gin.Context) {
+	router.GET("/challenge/:id", func(context *gin.Context) {
+		challengeId := context.Param("id")
+		fmt.Println("id =", challengeId)
+		url := "http://localhost:8080/challenge/" + challengeId
+		fmt.Println("url =", url)
+		resp, err := httpClt.Get(url)
+		if err != nil {
+			fmt.Println("error =", err.Error())
+			return
+		}
+		body, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			fmt.Println("error =", err.Error())
+			return
+		}
+		fmt.Println("body =", string(body))
+		challenge := model.Challenge{}
+		err = json.Unmarshal(body, &challenge)
+		context.HTML(200, "challenge.html", gin.H{
+			"challenge": challenge,
+		})
+	})
+
+	router.GET("/index", func(context *gin.Context) {
 		url := "http://localhost:8080/challenges"
 		resp, err := httpClt.Get(url)
 		if err != nil {
@@ -103,8 +136,40 @@ func main() {
 			fmt.Println("error =", err.Error())
 			return
 		}
-		c.HTML(http.StatusOK, "index.html", gin.H{
+		context.HTML(http.StatusOK, "index.html", gin.H{
 			"challenges": challenges,
+		})
+	})
+
+	router.GET("/user/challenges", func(context *gin.Context) {
+		token, err := context.Cookie("session_token")
+		if err != nil {
+			fmt.Println(err.Error())
+		}
+		fmt.Println("token =", token)
+		url := "http://localhost:8080/user/info"
+		req, _ := http.NewRequest("GET", url, nil)
+		req.Header.Set("Authorization", "Bearer "+token)
+		fmt.Println("Authorization header =", req.Header.Get("Authorization"))
+		resp, err := httpClt.Do(req)
+		if err != nil {
+			fmt.Println("error =", err.Error())
+			return
+		}
+		body, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			fmt.Println("error =", err.Error())
+			return
+		}
+		fmt.Println("body =", string(body))
+		userInfo := model.User{}
+		err = json.Unmarshal(body, &userInfo)
+		if err != nil {
+			fmt.Println("error =", err.Error())
+			return
+		}
+		context.HTML(http.StatusOK, "index.html", gin.H{
+			"user_info": userInfo,
 		})
 	})
 

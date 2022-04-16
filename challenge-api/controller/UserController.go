@@ -2,6 +2,7 @@ package controller
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"graduation-project/challenge-api/model"
 	"graduation-project/challenge-api/service"
@@ -89,6 +90,7 @@ func (uc *userController) GetUserInfo() gin.HandlerFunc {
 		}
 		userId, err := utils.ParseToken(tokenParts[1], []byte("qwerty12345"))
 		if err != nil {
+			fmt.Println("error when parse token =", err.Error())
 			context.JSON(403, err.Error())
 			return
 		}

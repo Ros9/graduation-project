@@ -78,14 +78,10 @@
             nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit
             anim id est laborum.</p>
         <div>
-            <h1>Challenges</h1>
-            {{range .challenges}}
-                <a href="/challenge/{{.ID}}">
-                    Title: {{.Title}}
-                    Description: {{.Description}}
-                </a>
-                <br>
-            {{end}}
+            <h1>Challenge</h1>
+            {{.challenge.Title}}
+            <br>
+            {{.challenge.Description}}
         </div>
     </div>
 </div>
