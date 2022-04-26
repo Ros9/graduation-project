@@ -1,10 +1,9 @@
 package event_consumer
 
 import (
+	"graduation-project/CityGO_bot/events"
 	"log"
 	"time"
-
-	"CityGO_bot/events"
 )
 
 type Consumer struct {

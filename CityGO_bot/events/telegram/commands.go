@@ -1,9 +1,10 @@
 package telegram
 
 import (
-	"CityGO_bot/models"
 	"encoding/json"
 	"fmt"
+	"graduation-project/CityGO_bot/events/backend"
+	"graduation-project/CityGO_bot/models"
 	"io/ioutil"
 	"log"
 	"math/rand"
@@ -28,54 +29,53 @@ func (p *Processor) doCmd(text string, chatID int, username string) error {
 	log.Printf("got new command '%s' from '%s", text, username)
 
 	//Проверка юзера
-	// currentUser, err := backend.GetUserByLogin(username)
-	// if err != nil {
-	// 	log.Printf("doCmd | Error: %s", err.Error())
-	// 	return p.tg.SendMessage(chatID, msgUserNotFound)
-	// } else if currentUser == (models.User{}) {
-	// 	log.Printf("doCmd | Error: User object is empty")
-	// 	return p.tg.SendMessage(chatID, msgUserNotFound)
-	// }
-
-	//МОКИ
-	if rand.Int()%2 == 0 {
-		return p.tg.SendMessage(chatID, fmt.Sprintf("%s %s", msgUserNotFound, username))
+	currentUser, err := backend.GetUserByLogin(username)
+	if err != nil {
+		log.Printf("doCmd | Error: %s", err.Error())
+		return p.tg.SendMessage(chatID, msgUserNotFound)
+	} else if currentUser == (models.User{}) {
+		log.Printf("doCmd | Error: User object is empty")
+		return p.tg.SendMessage(chatID, msgUserNotFound)
 	}
 
 	switch text {
 	case "/mychallenges":
 		//Поиск челленджей юзера
-		//usersChallenges, err := getUsersChallenges(currentUser)
+		usersChallenges, err := backend.GetUsersChallenges(currentUser)
+		if err != nil {
+			log.Printf("doCmd | Error: %s", err.Error())
+			return p.tg.SendMessage(chatID, msgUserNotFound)
+		}
 
 		//МОКИ ===============================
-		usersChallenges := make([]models.Challenge, 0)
+		// usersChallenges := make([]models.Challenge, 0)
 
-		usersChallenges = append(usersChallenges, models.Challenge{
-			ID:            "1",
-			CompanyID:     "1",
-			Title:         "Челлендж от Додо Пиццы!!!",
-			Description:   "Разгадай локацию, найди код и получи промокод на большую пиццу",
-			AnswerCode:    "4FL2MDCL",
-			TagsIds:       nil,
-			AttachmentIds: nil,
-			Tags:          nil,
-			Attachments:   nil,
-			StartDate:     "02-04-2022",
-			EndDate:       "02-05-2022",
-		})
-		usersChallenges = append(usersChallenges, models.Challenge{
-			ID:            "2",
-			CompanyID:     "2",
-			Title:         "Странное испытание",
-			Description:   "Разгадай локацию, найди код и получи 50% скидку на покупку любого товара в Marwin",
-			AnswerCode:    "8ID3MD3F",
-			TagsIds:       nil,
-			AttachmentIds: nil,
-			Tags:          nil,
-			Attachments:   nil,
-			StartDate:     "05-04-2022",
-			EndDate:       "25-05-2022",
-		})
+		// usersChallenges = append(usersChallenges, models.Challenge{
+		// 	ID:            "1",
+		// 	CompanyID:     "1",
+		// 	Title:         "Челлендж от Додо Пиццы!!!",
+		// 	Description:   "Разгадай локацию, найди код и получи промокод на большую пиццу",
+		// 	AnswerCode:    "4FL2MDCL",
+		// 	TagsIds:       nil,
+		// 	AttachmentIds: nil,
+		// 	Tags:          nil,
+		// 	Attachments:   nil,
+		// 	StartDate:     "02-04-2022",
+		// 	EndDate:       "02-05-2022",
+		// })
+		// usersChallenges = append(usersChallenges, models.Challenge{
+		// 	ID:            "2",
+		// 	CompanyID:     "2",
+		// 	Title:         "Странное испытание",
+		// 	Description:   "Разгадай локацию, найди код и получи 50% скидку на покупку любого товара в Marwin",
+		// 	AnswerCode:    "8ID3MD3F",
+		// 	TagsIds:       nil,
+		// 	AttachmentIds: nil,
+		// 	Tags:          nil,
+		// 	Attachments:   nil,
+		// 	StartDate:     "05-04-2022",
+		// 	EndDate:       "25-05-2022",
+		// })
 
 		//надо вынести в отдельную функцию логику создания сообщения "Список челленджей"
 

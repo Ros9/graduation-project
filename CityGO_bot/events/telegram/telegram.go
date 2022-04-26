@@ -2,10 +2,9 @@ package telegram
 
 import (
 	"errors"
-
-	"CityGO_bot/clients/telegram"
-	"CityGO_bot/events"
-	"CityGO_bot/lib/e"
+	"graduation-project/CityGO_bot/clients/telegram"
+	"graduation-project/CityGO_bot/events"
+	"graduation-project/CityGO_bot/lib/e"
 )
 
 type Processor struct {

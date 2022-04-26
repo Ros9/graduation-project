@@ -3,14 +3,16 @@ package repository
 import (
 	"database/sql"
 	"fmt"
-	"github.com/prometheus/common/log"
 	"graduation-project/challenge-api/model"
+
+	"github.com/prometheus/common/log"
 )
 
 type ChallengeRepository interface {
 	CreateChallenge(challenge *model.Challenge) (*model.Challenge, error)
 	FindChallengeById(challengeId string) (*model.Challenge, error)
 	FindChallenges() ([]*model.Challenge, error)
+	GetChallengesByUserId(userId string) ([]*model.Challenge, error)
 }
 
 type challengeRepository struct {
@@ -60,6 +62,26 @@ func (cr *challengeRepository) FindChallengeById(challengeId string) (*model.Cha
 
 func (cr *challengeRepository) FindChallenges() ([]*model.Challenge, error) {
 	q := "select * from challenges"
+	rows, err := cr.db.Query(q)
+	if err != nil {
+		fmt.Println("error =", err.Error())
+	}
+	challenges := []*model.Challenge{}
+	for rows.Next() {
+		challenge := &model.Challenge{}
+		err := rows.Scan(&challenge.ID, &challenge.CompanyID, &challenge.Title, &challenge.Description,
+			&challenge.AnswerCode, &challenge.StartDate, &challenge.EndDate)
+		if err != nil {
+			fmt.Println("error =", err.Error())
+			return nil, err
+		}
+		challenges = append(challenges, challenge)
+	}
+	return challenges, nil
+}
+
+func (cr *challengeRepository) GetChallengesByUserId(userId string) ([]*model.Challenge, error) {
+	q := fmt.Sprintf("select c.* from users_challenges uc join challenges c on c.id = uc.challenge_id where uc.user_id = '%s'", userId)
 	rows, err := cr.db.Query(q)
 	if err != nil {
 		fmt.Println("error =", err.Error())

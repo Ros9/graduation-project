@@ -4,9 +4,9 @@ import (
 	"flag"
 	"log"
 
-	tgClient "CityGO_bot/clients/telegram"
-	event_consumer "CityGO_bot/consumer/event-consumer"
-	"CityGO_bot/events/telegram"
+	tgClient "graduation-project/CityGO_bot/clients/telegram"
+	event_consumer "graduation-project/CityGO_bot/consumer/event-consumer"
+	"graduation-project/CityGO_bot/events/telegram"
 )
 
 const (

@@ -2,18 +2,20 @@ package controller
 
 import (
 	"encoding/json"
-	"github.com/gin-gonic/gin"
 	"graduation-project/challenge-api/model"
 	"graduation-project/challenge-api/service"
 	"graduation-project/challenge-api/utils"
 	"io/ioutil"
 	"strings"
+
+	"github.com/gin-gonic/gin"
 )
 
 type ChallengeController interface {
 	CreateChallenge() gin.HandlerFunc
 	GetChallenge() gin.HandlerFunc
 	GetChallenges() gin.HandlerFunc
+	GetChallengesByUserId() gin.HandlerFunc
 	UpdateChallenge() gin.HandlerFunc
 	DeleteChallenge() gin.HandlerFunc
 }
@@ -82,6 +84,16 @@ func (cc *challengeController) GetChallenges() gin.HandlerFunc {
 	}
 }
 
+func (cc *challengeController) GetChallengesByUserId() gin.HandlerFunc {
+	return func(context *gin.Context) {
+		userId := context.Param("userId")
+		challenges, err := cc.challengeService.GetChallengesByUserId(userId)
+		if err != nil {
+			context.JSON(404, err.Error())
+		}
+		context.JSON(200, challenges)
+	}
+}
 func (cc *challengeController) UpdateChallenge() gin.HandlerFunc {
 	return func(context *gin.Context) {
 		context.JSON(200, nil)

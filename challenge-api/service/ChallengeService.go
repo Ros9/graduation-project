@@ -1,15 +1,17 @@
 package service
 
 import (
-	"github.com/google/uuid"
 	"graduation-project/challenge-api/model"
 	"graduation-project/challenge-api/repository"
+
+	"github.com/google/uuid"
 )
 
 type ChallengeService interface {
 	CreateChallenge(challenge *model.Challenge) (*model.Challenge, error)
 	GetChallenge(challengeID string) (*model.Challenge, error)
 	GetChallenges() ([]*model.Challenge, error)
+	GetChallengesByUserId(userId string) ([]*model.Challenge, error)
 }
 
 type challengeService struct {
@@ -43,4 +45,8 @@ func (cs *challengeService) GetChallenge(challengeID string) (*model.Challenge, 
 
 func (cs *challengeService) GetChallenges() ([]*model.Challenge, error) {
 	return cs.challengeRepository.FindChallenges()
+}
+
+func (cs *challengeService) GetChallengesByUserId(userId string) ([]*model.Challenge, error) {
+	return cs.challengeRepository.GetChallengesByUserId(userId)
 }
