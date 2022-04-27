@@ -99,7 +99,6 @@ func (cr *challengeRepository) GetChallengesByUserId(userId string) ([]*model.Ch
 		}
 		challenges = append(challenges, challenge)
 	}
-	fmt.Println("\n\n==== repo challenges", challenges)
 	return challenges, nil
 }
 

@@ -1,7 +1,6 @@
 package service
 
 import (
-	"fmt"
 	"graduation-project/challenge-api/model"
 	"graduation-project/challenge-api/repository"
 
@@ -50,8 +49,6 @@ func (cs *answerService) GetAnswers() ([]*model.Answer, error) {
 }
 
 func (cs *answerService) PostAnswerFromTelegram(answer *model.Answer) (*model.Result, error) {
-	fmt.Println("\n\n==== ans in service", answer)
-
 	challenge, err := cs.challengeRepository.GetChallengeByAnswer(answer.Answer)
 	if err != nil {
 		return nil, err
