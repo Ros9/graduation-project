@@ -16,14 +16,12 @@ type AnswerService interface {
 }
 
 type answerService struct {
-	answerRepository         repository.AnswerRepository
-	userChallengesRepository repository.UsersChallengesRepository
-	challengeRepository      repository.ChallengeRepository
+	answerRepository    repository.AnswerRepository
+	challengeRepository repository.ChallengeRepository
 }
 
-func NewAnswerService(answerRepository repository.AnswerRepository,
-	userChallengesRepository repository.UsersChallengesRepository, challengeRepository repository.ChallengeRepository) AnswerService {
-	return &answerService{answerRepository, userChallengesRepository, challengeRepository}
+func NewAnswerService(answerRepository repository.AnswerRepository, challengeRepository repository.ChallengeRepository) AnswerService {
+	return &answerService{answerRepository, challengeRepository}
 }
 
 func (cs *answerService) CreateAnswer(answer *model.Answer) (*model.Answer, error) {
@@ -35,13 +33,6 @@ func (cs *answerService) CreateAnswer(answer *model.Answer) (*model.Answer, erro
 	createdAnswer, err := cs.answerRepository.CreateAnswer(answer)
 	if err != nil {
 		return nil, err
-	}
-	_, err = cs.userChallengesRepository.CreateUserChallenge(&model.UserChallenge{
-		UserId:      answer.UserID,
-		ChallengeId: answer.ChallengeID,
-	})
-	if err != nil {
-
 	}
 	return createdAnswer, nil
 }

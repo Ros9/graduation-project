@@ -5,7 +5,7 @@ type Answer struct {
 	UserID      string `json:"user_id"`
 	ChallengeID string `json:"challenge_id"`
 	Answer      string `json:"answer"`
-	Status      string `json:"status"`
+	Status      int    `json:"status"`
 }
 
 type Result struct {
