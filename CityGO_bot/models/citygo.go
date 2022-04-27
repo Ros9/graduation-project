@@ -71,3 +71,8 @@ type User struct {
 	Password string `json:"password"`
 	Telegram string `json:"telegram"`
 }
+
+type Result struct {
+	Status    int       `json:"status"`
+	Challenge Challenge `json:"challenge"`
+}

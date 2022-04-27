@@ -3,8 +3,9 @@ package repository
 import (
 	"database/sql"
 	"fmt"
-	"github.com/prometheus/common/log"
 	"graduation-project/challenge-api/model"
+
+	"github.com/prometheus/common/log"
 )
 
 type UsersChallengesRepository interface {
@@ -20,7 +21,10 @@ func NewUsersChallengesRepository(db *sql.DB) UsersChallengesRepository {
 	preQueries := []string{
 		`create table users_challenges (
 			user_id text,
-			challenge_id text
+			challenge_id text,
+			users_answer text,
+			status int,
+			created_at timestamp
 		)`,
 	}
 	for _, query := range preQueries {

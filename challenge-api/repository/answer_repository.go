@@ -2,8 +2,9 @@ package repository
 
 import (
 	"database/sql"
-	"github.com/prometheus/common/log"
 	"graduation-project/challenge-api/model"
+
+	"github.com/prometheus/common/log"
 )
 
 type AnswerRepository interface {

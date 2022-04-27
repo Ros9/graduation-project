@@ -7,3 +7,8 @@ type Answer struct {
 	Answer      string `json:"answer"`
 	Status      string `json:"status"`
 }
+
+type Result struct {
+	Status    int                       `json:"status"`
+	Challenge ChallengeTelegramResponse `json:"challenge"`
+}
