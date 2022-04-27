@@ -3,10 +3,11 @@ package service
 import (
 	"errors"
 	"fmt"
-	"github.com/google/uuid"
 	"graduation-project/challenge-api/model"
 	"graduation-project/challenge-api/repository"
 	"graduation-project/challenge-api/utils"
+
+	"github.com/google/uuid"
 )
 
 type UserService interface {
@@ -14,6 +15,7 @@ type UserService interface {
 	GetUser(userID string) (*model.User, error)
 	GetUsers() ([]*model.User, error)
 	GetTokenForUser(login, password string) (string, error)
+	GetUserByTelegram(userTelegram string) (*model.User, error)
 }
 
 type userService struct {
@@ -64,6 +66,30 @@ func (cs *userService) GetUser(userID string) (*model.User, error) {
 		user.Challenges = append(user.Challenges, userChallenge)
 	}
 	return user, nil
+}
+
+func (cs *userService) GetUserByTelegram(userTelegram string) (user *model.User, err error) {
+	user, err = cs.userRepository.FindUserByTelegram(userTelegram)
+	if err != nil {
+		return nil, err
+	}
+
+	ucs, err := cs.usersChallengesRepository.FindChallengesByUserId(user.ID)
+	fmt.Println()
+	for _, value := range ucs {
+		fmt.Println(value)
+	}
+	fmt.Println()
+
+	for _, uc := range ucs {
+		userChallenge, err := cs.challengeRepository.FindChallengeById(uc.ChallengeId)
+		if err != nil {
+			fmt.Println("err =", err.Error())
+		}
+		user.Challenges = append(user.Challenges, userChallenge)
+	}
+
+	return
 }
 
 func (cs *userService) GetUsers() ([]*model.User, error) {

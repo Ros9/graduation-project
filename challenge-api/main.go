@@ -3,14 +3,15 @@ package main
 import (
 	"database/sql"
 	"fmt"
-	"github.com/gin-gonic/gin"
-	_ "github.com/lib/pq"
-	"github.com/prometheus/common/log"
 	"graduation-project/challenge-api/controller"
 	"graduation-project/challenge-api/repository"
 	"graduation-project/challenge-api/service"
 	"graduation-project/challenge-api/utils"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
+	_ "github.com/lib/pq"
+	"github.com/prometheus/common/log"
 )
 
 func main() {
@@ -18,9 +19,9 @@ func main() {
 	router.LoadHTMLGlob("templates/*")
 	router.Static("/assets", "./assets")
 
-	dbConnString := "postgres://ros9:ros9@localhost:5432/graduation_project"
-
+	dbConnString := "postgres://postgres:1234@localhost:5432/CityGoDB?sslmode=disable"
 	dbConnection, err := sql.Open("postgres", dbConnString)
+
 	if err != nil {
 		log.Error(err.Error())
 	}
@@ -64,6 +65,7 @@ func main() {
 	router.Handle("POST", "/user/registration", userController.CreateUser())
 	router.Handle("GET", "/user/info", userController.GetUserInfo())
 	router.Handle("GET", "/user/:id", userController.GetUser())
+	router.Handle("GET", "/user/telegram/:telegram", userController.GetUserByTelegram())
 	router.Handle("GET", "/user", userController.GetUserList())
 	router.Handle("PUT", "/user/:id", userController.UpdateUser())
 	router.Handle("DELETE", "/user/:id", userController.DeleteUser())
@@ -77,6 +79,7 @@ func main() {
 	router.Handle("POST", "/challenge", challengeController.CreateChallenge())
 	router.Handle("GET", "/challenge/:id", challengeController.GetChallenge())
 	router.Handle("GET", "/challenges", challengeController.GetChallenges())
+	router.Handle("GET", "/challenges/user/:userId", challengeController.GetChallengesByUserId())
 	router.Handle("PUT", "/challenge/:id", challengeController.UpdateChallenge())
 	router.Handle("DELETE", "/challenge/:id", challengeController.DeleteChallenge())
 

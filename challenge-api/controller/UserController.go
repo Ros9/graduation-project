@@ -3,12 +3,13 @@ package controller
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"graduation-project/challenge-api/model"
 	"graduation-project/challenge-api/service"
 	"graduation-project/challenge-api/utils"
 	"io/ioutil"
 	"strings"
+
+	"github.com/gin-gonic/gin"
 )
 
 type UserController interface {
@@ -18,6 +19,7 @@ type UserController interface {
 	UpdateUser() gin.HandlerFunc
 	DeleteUser() gin.HandlerFunc
 	GetUserInfo() gin.HandlerFunc
+	GetUserByTelegram() gin.HandlerFunc
 }
 
 type userController struct {
@@ -51,6 +53,17 @@ func (uc *userController) GetUser() gin.HandlerFunc {
 	return func(context *gin.Context) {
 		userId := context.Param("id")
 		user, err := uc.userService.GetUser(userId)
+		if err != nil {
+			context.JSON(404, err.Error())
+		}
+		context.JSON(200, user)
+	}
+}
+
+func (uc *userController) GetUserByTelegram() gin.HandlerFunc {
+	return func(context *gin.Context) {
+		userTelegram := context.Param("telegram")
+		user, err := uc.userService.GetUserByTelegram(userTelegram)
 		if err != nil {
 			context.JSON(404, err.Error())
 		}
