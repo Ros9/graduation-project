@@ -11,7 +11,9 @@ type ChallengeService interface {
 	CreateChallenge(challenge *model.Challenge) (*model.Challenge, error)
 	GetChallenge(challengeID string) (*model.Challenge, error)
 	GetChallenges() ([]*model.Challenge, error)
+	GetChallengesTgResp() ([]*model.ChallengeTelegramResponse, error)
 	GetChallengesByUserId(userId string) ([]*model.Challenge, error)
+	GetChallengesTgRespByUserId(userId string) ([]*model.ChallengeTelegramResponse, error)
 }
 
 type challengeService struct {
@@ -47,6 +49,36 @@ func (cs *challengeService) GetChallenges() ([]*model.Challenge, error) {
 	return cs.challengeRepository.FindChallenges()
 }
 
+func (cs *challengeService) GetChallengesTgResp() ([]*model.ChallengeTelegramResponse, error) {
+	challenges, err := cs.challengeRepository.FindChallenges()
+	if err != nil {
+		return nil, err
+	}
+	var challengesTgResponses []*model.ChallengeTelegramResponse
+	for _, ch := range challenges {
+		challengesResp := model.ChallengeTelegramResponse(*ch)
+		challengesTgResponses = append(challengesTgResponses, &challengesResp)
+	}
+	return challengesTgResponses, nil
+}
+
 func (cs *challengeService) GetChallengesByUserId(userId string) ([]*model.Challenge, error) {
-	return cs.challengeRepository.GetChallengesByUserId(userId)
+	challenges, err := cs.challengeRepository.GetChallengesByUserId(userId)
+	if err != nil {
+		return nil, err
+	}
+	return challenges, nil
+}
+
+func (cs *challengeService) GetChallengesTgRespByUserId(userId string) ([]*model.ChallengeTelegramResponse, error) {
+	challenges, err := cs.challengeRepository.GetChallengesByUserId(userId)
+	if err != nil {
+		return nil, err
+	}
+	var challengesTgResponses []*model.ChallengeTelegramResponse
+	for _, ch := range challenges {
+		challengesResp := model.ChallengeTelegramResponse(*ch)
+		challengesTgResponses = append(challengesTgResponses, &challengesResp)
+	}
+	return challengesTgResponses, nil
 }

@@ -7,7 +7,6 @@ import (
 	"graduation-project/CityGO_bot/models"
 	"io/ioutil"
 	"log"
-	"math/rand"
 	"net/http"
 	"net/url"
 	"strings"
@@ -46,82 +45,30 @@ func (p *Processor) doCmd(text string, chatID int, username string) error {
 			log.Printf("doCmd | Error: %s", err.Error())
 			return p.tg.SendMessage(chatID, msgUserNotFound)
 		}
-
-		//МОКИ ===============================
-		// usersChallenges := make([]models.Challenge, 0)
-
-		// usersChallenges = append(usersChallenges, models.Challenge{
-		// 	ID:            "1",
-		// 	CompanyID:     "1",
-		// 	Title:         "Челлендж от Додо Пиццы!!!",
-		// 	Description:   "Разгадай локацию, найди код и получи промокод на большую пиццу",
-		// 	AnswerCode:    "4FL2MDCL",
-		// 	TagsIds:       nil,
-		// 	AttachmentIds: nil,
-		// 	Tags:          nil,
-		// 	Attachments:   nil,
-		// 	StartDate:     "02-04-2022",
-		// 	EndDate:       "02-05-2022",
-		// })
-		// usersChallenges = append(usersChallenges, models.Challenge{
-		// 	ID:            "2",
-		// 	CompanyID:     "2",
-		// 	Title:         "Странное испытание",
-		// 	Description:   "Разгадай локацию, найди код и получи 50% скидку на покупку любого товара в Marwin",
-		// 	AnswerCode:    "8ID3MD3F",
-		// 	TagsIds:       nil,
-		// 	AttachmentIds: nil,
-		// 	Tags:          nil,
-		// 	Attachments:   nil,
-		// 	StartDate:     "05-04-2022",
-		// 	EndDate:       "25-05-2022",
-		// })
-
-		//надо вынести в отдельную функцию логику создания сообщения "Список челленджей"
-
 		var usersChallengesMessage string
 		for i, challenge := range usersChallenges {
 			usersChallengesMessage += fmt.Sprintf("%v. %s\n", i+1, challenge.Title)
 		}
 		return p.tg.SendMessage(chatID, usersChallengesMessage)
 	case "/mychallengesfullinfo":
-		//Поиск челленджей юзера
-		//usersChallenges, err := getUsersChallenges(currentUser)
-
-		//МОКИ ===============================
-		usersChallenges := make([]models.Challenge, 0)
-
-		usersChallenges = append(usersChallenges, models.Challenge{
-			ID:            "1",
-			CompanyID:     "1",
-			Title:         "Челлендж от Додо Пиццы!!!",
-			Description:   "Разгадай локацию, найди код и получи промокод на большую пиццу",
-			AnswerCode:    "4FL2MDCL",
-			TagsIds:       nil,
-			AttachmentIds: nil,
-			Tags:          nil,
-			Attachments:   nil,
-			StartDate:     "02-04-2022",
-			EndDate:       "02-05-2022",
-		})
-		usersChallenges = append(usersChallenges, models.Challenge{
-			ID:            "2",
-			CompanyID:     "2",
-			Title:         "Странное испытание",
-			Description:   "Разгадай локацию, найди код и получи 50% скидку на покупку любого товара в Marwin",
-			AnswerCode:    "8ID3MD3F",
-			TagsIds:       nil,
-			AttachmentIds: nil,
-			Tags:          nil,
-			Attachments:   nil,
-			StartDate:     "05-04-2022",
-			EndDate:       "25-05-2022",
-		})
-
-		//надо вынести в отдельную функцию логику создания сообщения "Список челленджей"
-
+		usersChallenges, err := backend.GetUsersChallenges(currentUser)
+		if err != nil {
+			log.Printf("doCmd | Error: %s", err.Error())
+			return p.tg.SendMessage(chatID, msgUserNotFound)
+		}
 		var usersChallengesMessage string
 		for i, challenge := range usersChallenges {
+			usersChallengesMessage += fmt.Sprintf("%v. %s\n\nПериод: %s\n\n%s\n\n\n", i+1, challenge.Title, (challenge.StartDate + " - " + challenge.EndDate), challenge.Description)
+		}
+		return p.tg.SendMessage(chatID, usersChallengesMessage)
+	case "/challenges":
+		challenges, err := backend.GetAvailableChallenges()
+		if err != nil {
+			log.Printf("doCmd | Error: %s", err.Error())
+			return p.tg.SendMessage(chatID, msgUserNotFound)
+		}
+		var usersChallengesMessage string
+		for i, challenge := range challenges {
 			usersChallengesMessage += fmt.Sprintf("%v. %s\n\nПериод: %s\n\n%s\n\n\n", i+1, challenge.Title, (challenge.StartDate + " - " + challenge.EndDate), challenge.Description)
 		}
 		return p.tg.SendMessage(chatID, usersChallengesMessage)
@@ -152,10 +99,12 @@ func (p *Processor) doCmd(text string, chatID int, username string) error {
 	case StartCmd:
 		return p.sendHello(chatID)
 	default:
-		if rand.Int()%2 == 0 {
-			return p.tg.SendMessage(chatID, msgCodeActivatedSuccesfully+fmt.Sprintf(" \"%s\"", "Челлендж от Додо Пиццы!!!"))
+		resultMessage, err := backend.PostAnswerCode(text)
+		if err != nil && resultMessage == "0" {
+			log.Printf("doCmd | Error: %s", err.Error())
+			return p.tg.SendMessage(chatID, msgCodeNotFound)
 		}
-		return p.tg.SendMessage(chatID, msgCodeNotFound)
+		return p.tg.SendMessage(chatID, resultMessage)
 	}
 }
 

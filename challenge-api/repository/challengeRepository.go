@@ -13,6 +13,7 @@ type ChallengeRepository interface {
 	FindChallengeById(challengeId string) (*model.Challenge, error)
 	FindChallenges() ([]*model.Challenge, error)
 	GetChallengesByUserId(userId string) ([]*model.Challenge, error)
+	GetChallengeByAnswer(answer string) (*model.Challenge, error)
 }
 
 type challengeRepository struct {
@@ -81,7 +82,7 @@ func (cr *challengeRepository) FindChallenges() ([]*model.Challenge, error) {
 }
 
 func (cr *challengeRepository) GetChallengesByUserId(userId string) ([]*model.Challenge, error) {
-	q := fmt.Sprintf("select c.* from users_challenges uc join challenges c on c.id = uc.challenge_id where uc.user_id = '%s'", userId)
+	q := fmt.Sprintf("select c.* from users_challenges uc join challenges c on c.id = uc.challenge_id where uc.user_id = '%s' and uc.status = 1", userId)
 	rows, err := cr.db.Query(q)
 	if err != nil {
 		fmt.Println("error =", err.Error())
@@ -98,4 +99,19 @@ func (cr *challengeRepository) GetChallengesByUserId(userId string) ([]*model.Ch
 		challenges = append(challenges, challenge)
 	}
 	return challenges, nil
+}
+
+func (cr *challengeRepository) GetChallengeByAnswer(answer string) (*model.Challenge, error) {
+	fmt.Println("\n\n===ans in ch repo", answer)
+
+	challenge := &model.Challenge{}
+	err := cr.db.QueryRow("select * from challenges where answer_code = $1", &answer).
+		Scan(&challenge.ID, &challenge.CompanyID, &challenge.Title, &challenge.Description, &challenge.AnswerCode, &challenge.StartDate, &challenge.EndDate)
+
+	fmt.Println("\n\n===ans in ch repo", challenge)
+
+	if err != nil {
+		return nil, err
+	}
+	return challenge, nil
 }

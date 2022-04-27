@@ -2,6 +2,7 @@ package controller
 
 import (
 	"encoding/json"
+	"fmt"
 	"graduation-project/challenge-api/model"
 	"graduation-project/challenge-api/service"
 	"graduation-project/challenge-api/utils"
@@ -15,7 +16,9 @@ type ChallengeController interface {
 	CreateChallenge() gin.HandlerFunc
 	GetChallenge() gin.HandlerFunc
 	GetChallenges() gin.HandlerFunc
+	GetChallengesTgResp() gin.HandlerFunc
 	GetChallengesByUserId() gin.HandlerFunc
+	GetChallengesTgRespByUserId() gin.HandlerFunc
 	UpdateChallenge() gin.HandlerFunc
 	DeleteChallenge() gin.HandlerFunc
 }
@@ -84,6 +87,21 @@ func (cc *challengeController) GetChallenges() gin.HandlerFunc {
 	}
 }
 
+func (cc *challengeController) GetChallengesTgResp() gin.HandlerFunc {
+	return func(context *gin.Context) {
+		challenges, err := cc.challengeService.GetChallengesTgResp()
+
+		for _, x := range challenges {
+			fmt.Println(x)
+		}
+
+		if err != nil {
+			context.JSON(404, err.Error())
+		}
+		context.JSON(200, challenges)
+	}
+}
+
 func (cc *challengeController) GetChallengesByUserId() gin.HandlerFunc {
 	return func(context *gin.Context) {
 		userId := context.Param("userId")
@@ -94,6 +112,18 @@ func (cc *challengeController) GetChallengesByUserId() gin.HandlerFunc {
 		context.JSON(200, challenges)
 	}
 }
+
+func (cc *challengeController) GetChallengesTgRespByUserId() gin.HandlerFunc {
+	return func(context *gin.Context) {
+		userId := context.Param("userId")
+		challenges, err := cc.challengeService.GetChallengesTgRespByUserId(userId)
+		if err != nil {
+			context.JSON(404, err.Error())
+		}
+		context.JSON(200, challenges)
+	}
+}
+
 func (cc *challengeController) UpdateChallenge() gin.HandlerFunc {
 	return func(context *gin.Context) {
 		context.JSON(200, nil)

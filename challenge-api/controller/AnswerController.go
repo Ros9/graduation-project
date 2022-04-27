@@ -2,12 +2,14 @@ package controller
 
 import (
 	"encoding/json"
-	"github.com/gin-gonic/gin"
+	"fmt"
 	"graduation-project/challenge-api/model"
 	"graduation-project/challenge-api/service"
 	"graduation-project/challenge-api/utils"
 	"io/ioutil"
 	"strings"
+
+	"github.com/gin-gonic/gin"
 )
 
 type AnswerController interface {
@@ -16,6 +18,7 @@ type AnswerController interface {
 	GetAnswers() gin.HandlerFunc
 	UpdateAnswer() gin.HandlerFunc
 	DeleteAnswer() gin.HandlerFunc
+	PostAnswerFromTelegram() gin.HandlerFunc
 }
 
 type answerController struct {
@@ -61,6 +64,31 @@ func (ac *answerController) CreateAnswer() gin.HandlerFunc {
 			return
 		}
 		context.JSON(200, createdAnswer)
+	}
+}
+
+func (ac *answerController) PostAnswerFromTelegram() gin.HandlerFunc {
+	return func(context *gin.Context) {
+		jsonData, err := ioutil.ReadAll(context.Request.Body)
+		if err != nil {
+			context.JSON(500, err.Error())
+			return
+		}
+		answer := model.Answer{}
+		err = json.Unmarshal(jsonData, &answer)
+		if err != nil {
+			fmt.Println("\n\n========= answer", answer)
+			context.JSON(404, err.Error())
+			return
+		}
+		result, err := ac.answerService.PostAnswerFromTelegram(&answer)
+
+		if err != nil {
+			context.JSON(404, err.Error())
+			return
+		}
+		context.JSON(200, result)
+
 	}
 }
 
