@@ -119,6 +119,40 @@ func main() {
 		})
 	})
 
+	router.POST("/challenge/:id", func(context *gin.Context) {
+		token, err := context.Cookie("session_token")
+		if err != nil {
+			fmt.Println(err.Error())
+		}
+		challengeId := context.Param("id")
+		answerCode := context.PostForm("answer")
+		fmt.Println("token =", token)
+		fmt.Println("challengeId =", challengeId)
+		fmt.Println("answer =", answerCode)
+		answer := &model.Answer{
+			ChallengeID: challengeId,
+			Answer:      answerCode,
+		}
+		fmt.Println(*answer)
+		data, err := json.Marshal(answer)
+		if err != nil {
+			fmt.Println("error =", err.Error())
+			return
+		}
+		fmt.Println(string(data))
+		url := "http://localhost:8080/answer"
+		fmt.Println("url =", url)
+		req, _ := http.NewRequest("POST", url, bytes.NewBuffer(data))
+		req.Header.Set("Authorization", "Bearer "+token)
+		resp, err := httpClt.Do(req)
+		body, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			fmt.Println("error =", err.Error())
+			return
+		}
+		fmt.Println("body =", string(body))
+	})
+
 	router.GET("/index", func(context *gin.Context) {
 		url := "http://localhost:8080/challenges"
 		resp, err := httpClt.Get(url)

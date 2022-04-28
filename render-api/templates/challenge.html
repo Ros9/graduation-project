@@ -14,7 +14,7 @@
 
 <div class="wrapper d-flex align-items-stretch">
     <nav id="sidebar" class="active">
-        <h1><a href="index.html" class="logo">GO</a></h1>
+        <h1><a href="/index" class="logo">GO</a></h1>
         <ul class="list-unstyled components mb-5">
             <li class="active">
                 <a href="/index"><span class="fa fa-home"></span> Home</a>
@@ -78,13 +78,19 @@
             </div>
 
             <div class="col-md-6 mb-4">
-                <h4><strong>Facilis consequatur eligendi</strong></h4>
+                <h4><strong>{{.challenge.Title}}</strong></h4>
                 <p class="text-muted">
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Facilis consequatur
-                    eligendi quisquam doloremque vero ex debitis veritatis placeat unde animi laborum
-                    sapiente illo possimus, commodi dignissimos obcaecati illum maiores corporis.
+                    {{.challenge.Description}}
                 </p>
-                <button type="button" class="btn btn-primary">Read more</button>
+                <form action="" method="post">
+                    <div class="form-group">
+                        <label for="answer"><i class="zmdi zmdi-account material-icons-name"></i></label>
+                        <input type="text" name="answer" id="answer" placeholder="Answer"/>
+                    </div>
+                    <div class="form-group form-button">
+                        <input type="submit" class="form-submit" value="Submit"/>
+                    </div>
+                </form>
             </div>
         </div>
 
@@ -92,7 +98,7 @@
 
         <!--Section: News of the day-->
 
-        <h2 class="mb-4">Sidebar #07</h2>
+        <h2 class="mb-4">Sidebar Particular Challenge</h2>
         <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et
             dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex
             ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat
@@ -108,6 +114,11 @@
             {{.challenge.Title}}
             <br>
             {{.challenge.Description}}
+            <br>
+            {{.start_date}}
+            <br>
+            {{.end_date}}
+            {{.tags}}
         </div>
     </div>
 </div>
