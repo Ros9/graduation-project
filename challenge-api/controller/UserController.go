@@ -63,6 +63,7 @@ func (uc *userController) GetUser() gin.HandlerFunc {
 func (uc *userController) GetUserByTelegram() gin.HandlerFunc {
 	return func(context *gin.Context) {
 		userTelegram := context.Param("telegram")
+		fmt.Println("\n\n==== handler", userTelegram)
 		user, err := uc.userService.GetUserByTelegram(userTelegram)
 		if err != nil {
 			context.JSON(404, err.Error())

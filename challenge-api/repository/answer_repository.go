@@ -23,7 +23,8 @@ func NewAnswerRepository(db *sql.DB) AnswerRepository {
 			user_id text,
 			challenge_id text,
 			answer text,
-			status text
+			status integer,
+			created_at timestamp
 		)`,
 	}
 	for _, query := range preQueries {

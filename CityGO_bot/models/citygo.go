@@ -13,7 +13,7 @@ type Answer struct {
 	ChallengeID string `json:"challenge_id"`
 	UserID      string `json:"user_id"`
 	Answer      string `json:"answer"`
-	Status      string `json:"status"`
+	Status      int    `json:"status"`
 }
 
 type Attachment struct {

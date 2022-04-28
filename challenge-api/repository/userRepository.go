@@ -79,5 +79,6 @@ func (ur *userRepository) FindUserByTelegram(userTelegram string) (userr *model.
 	fmt.Println(&userTelegram, userTelegram)
 	user := &model.User{}
 	err = ur.db.QueryRow("select * from users where telegram = $1", &userTelegram).Scan(&user.ID, &user.Login, &user.Email, &user.Name, &user.Surname, &user.Password, &user.Telegram)
+	fmt.Println("\n\n==== repo 1", user, userTelegram)
 	return user, err
 }

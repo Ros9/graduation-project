@@ -1,7 +1,6 @@
 package service
 
 import (
-	"fmt"
 	"graduation-project/challenge-api/model"
 	"graduation-project/challenge-api/repository"
 
@@ -16,14 +15,12 @@ type AnswerService interface {
 }
 
 type answerService struct {
-	answerRepository         repository.AnswerRepository
-	userChallengesRepository repository.UsersChallengesRepository
-	challengeRepository      repository.ChallengeRepository
+	answerRepository    repository.AnswerRepository
+	challengeRepository repository.ChallengeRepository
 }
 
-func NewAnswerService(answerRepository repository.AnswerRepository,
-	userChallengesRepository repository.UsersChallengesRepository, challengeRepository repository.ChallengeRepository) AnswerService {
-	return &answerService{answerRepository, userChallengesRepository, challengeRepository}
+func NewAnswerService(answerRepository repository.AnswerRepository, challengeRepository repository.ChallengeRepository) AnswerService {
+	return &answerService{answerRepository, challengeRepository}
 }
 
 func (cs *answerService) CreateAnswer(answer *model.Answer) (*model.Answer, error) {
@@ -35,13 +32,6 @@ func (cs *answerService) CreateAnswer(answer *model.Answer) (*model.Answer, erro
 	createdAnswer, err := cs.answerRepository.CreateAnswer(answer)
 	if err != nil {
 		return nil, err
-	}
-	_, err = cs.userChallengesRepository.CreateUserChallenge(&model.UserChallenge{
-		UserId:      answer.UserID,
-		ChallengeId: answer.ChallengeID,
-	})
-	if err != nil {
-
 	}
 	return createdAnswer, nil
 }
@@ -59,8 +49,6 @@ func (cs *answerService) GetAnswers() ([]*model.Answer, error) {
 }
 
 func (cs *answerService) PostAnswerFromTelegram(answer *model.Answer) (*model.Result, error) {
-	fmt.Println("\n\n==== ans in service", answer)
-
 	challenge, err := cs.challengeRepository.GetChallengeByAnswer(answer.Answer)
 	if err != nil {
 		return nil, err
