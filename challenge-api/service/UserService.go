@@ -15,21 +15,18 @@ type UserService interface {
 	GetUser(userID string) (*model.User, error)
 	GetUsers() ([]*model.User, error)
 	GetTokenForUser(login, password string) (string, error)
-	GetUserByTelegram(userTelegram string) (*model.User, error)
+	GetUserByTelegram(userTelegram string) (*model.UserTelegram, error)
 }
 
 type userService struct {
-	userRepository            repository.UserRepository
-	usersChallengesRepository repository.UsersChallengesRepository
-	challengeRepository       repository.ChallengeRepository
+	userRepository      repository.UserRepository
+	challengeRepository repository.ChallengeRepository
 }
 
 func NewUserService(userRepository repository.UserRepository,
-	usersChallengesRepository repository.UsersChallengesRepository,
 	challengeRepository repository.ChallengeRepository) UserService {
 	return &userService{
 		userRepository,
-		usersChallengesRepository,
 		challengeRepository,
 	}
 }
@@ -47,49 +44,50 @@ func (cs *userService) CreateUser(user *model.User) (*model.User, error) {
 	return createdUser, nil
 }
 
+//TODO
 func (cs *userService) GetUser(userID string) (*model.User, error) {
 	user, err := cs.userRepository.FindUserById(userID)
 	if err != nil {
 		return nil, err
 	}
-	ucs, err := cs.usersChallengesRepository.FindChallengesByUserId(user.ID)
-	fmt.Println()
-	for _, value := range ucs {
-		fmt.Println(value)
-	}
-	fmt.Println()
-	for _, uc := range ucs {
-		userChallenge, err := cs.challengeRepository.FindChallengeById(uc.ChallengeId)
-		if err != nil {
-			fmt.Println("err =", err.Error())
-		}
-		user.Challenges = append(user.Challenges, userChallenge)
-	}
+	ucs, err := cs.challengeRepository.GetChallengesByUserId(user.ID)
+	// for _, uc := range ucs {
+	// 	userChallenge, err := cs.challengeRepository.FindChallengeById(uc.ChallengeId)
+	// 	if err != nil {
+	// 		fmt.Println("err =", err.Error())
+	// 	}
+	// 	user.Challenges = append(user.Challenges, userChallenge)
+	// }
+
+	user.Challenges = append(user.Challenges, ucs...)
 	return user, nil
 }
 
-func (cs *userService) GetUserByTelegram(userTelegram string) (user *model.User, err error) {
-	user, err = cs.userRepository.FindUserByTelegram(userTelegram)
+func (cs *userService) GetUserByTelegram(userTelegram string) (*model.UserTelegram, error) {
+	fmt.Println("\n\n==== service 1", userTelegram)
+	user, err := cs.userRepository.FindUserByTelegram(userTelegram)
 	if err != nil {
 		return nil, err
 	}
+	fmt.Println("\n\n==== service 2", user)
 
-	ucs, err := cs.usersChallengesRepository.FindChallengesByUserId(user.ID)
-	fmt.Println()
-	for _, value := range ucs {
-		fmt.Println(value)
+	userChallenges, err := cs.challengeRepository.GetChallengesByUserId(user.ID)
+	userResponse := model.UserTelegram{
+		ID:       user.ID,
+		Login:    user.Login,
+		Email:    user.Email,
+		Name:     user.Name,
+		Surname:  user.Surname,
+		Password: "",
+		Telegram: user.Telegram,
 	}
-	fmt.Println()
-
-	for _, uc := range ucs {
-		userChallenge, err := cs.challengeRepository.FindChallengeById(uc.ChallengeId)
-		if err != nil {
-			fmt.Println("err =", err.Error())
-		}
-		user.Challenges = append(user.Challenges, userChallenge)
+	for _, challenge := range userChallenges {
+		ch := model.ChallengeTelegramResponse(*challenge)
+		userResponse.Challenges = append(userResponse.Challenges, &ch)
 	}
+	fmt.Println("\n\n==== service 3", userResponse)
 
-	return
+	return &userResponse, err
 }
 
 func (cs *userService) GetUsers() ([]*model.User, error) {

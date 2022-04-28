@@ -2,7 +2,6 @@ package controller
 
 import (
 	"encoding/json"
-	"fmt"
 	"graduation-project/challenge-api/model"
 	"graduation-project/challenge-api/service"
 	"graduation-project/challenge-api/utils"
@@ -77,7 +76,6 @@ func (ac *answerController) PostAnswerFromTelegram() gin.HandlerFunc {
 		answer := model.Answer{}
 		err = json.Unmarshal(jsonData, &answer)
 		if err != nil {
-			fmt.Println("\n\n========= answer", answer)
 			context.JSON(404, err.Error())
 			return
 		}
