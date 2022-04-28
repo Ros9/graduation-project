@@ -187,5 +187,9 @@ func main() {
 		})
 	})
 
+	router.GET("/test", func(context *gin.Context) {
+
+	})
+
 	router.Run(":8081")
 }
