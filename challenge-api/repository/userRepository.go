@@ -12,7 +12,7 @@ type UserRepository interface {
 	CreateUser(user *model.User) (*model.User, error)
 	FindUserById(userId string) (*model.User, error)
 	FindUsers() ([]*model.User, error)
-	FindUserByLogin(login string) (*model.User, error)
+	FindUserByUsername(login string) (*model.User, error)
 	FindUserByTelegram(userTelegram string) (*model.User, error)
 }
 
@@ -24,11 +24,9 @@ func NewUserRepository(db *sql.DB) UserRepository {
 	preQueries := []string{
 		`create table users (
 			id text,
-			login text,
-			email text,
-			name text,
-			surname text,
+			username text,
 			password text,
+			email text,
 			telegram text
 		)`,
 	}
@@ -43,8 +41,8 @@ func NewUserRepository(db *sql.DB) UserRepository {
 }
 
 func (ur *userRepository) CreateUser(user *model.User) (*model.User, error) {
-	row := ur.db.QueryRow("insert into users (id, login, email, name, surname, password, telegram) "+
-		"values ($1, $2, $3, $4, $5, $6, $7)", &user.ID, &user.Login, &user.Email, &user.Name, &user.Surname, &user.Password, &user.Telegram)
+	row := ur.db.QueryRow("insert into users (id, username, password, email, telegram) "+
+		"values ($1, $2, $3, $4, $5 )", &user.ID, &user.Username, &user.Password, &user.Email, &user.Telegram)
 	if row.Err() != nil {
 		return nil, row.Err()
 	}
@@ -54,7 +52,7 @@ func (ur *userRepository) CreateUser(user *model.User) (*model.User, error) {
 func (ur *userRepository) FindUserById(userId string) (*model.User, error) {
 	user := &model.User{}
 	err := ur.db.QueryRow("select * from users where id = $1", &userId).
-		Scan(&user.ID, &user.Login, &user.Email, &user.Name, &user.Surname, &user.Password, &user.Telegram)
+		Scan(&user.ID, &user.Username, &user.Email, &user.Password, &user.Telegram)
 	if err != nil {
 		return nil, err
 	}
@@ -65,20 +63,21 @@ func (ur *userRepository) FindUsers() ([]*model.User, error) {
 	return nil, nil
 }
 
-func (ur *userRepository) FindUserByLogin(login string) (*model.User, error) {
+func (ur *userRepository) FindUserByUsername(username string) (*model.User, error) {
 	user := &model.User{}
-	err := ur.db.QueryRow("select * from users where login = $1", &login).
-		Scan(&user.ID, &user.Login, &user.Email, &user.Name, &user.Surname, &user.Password, &user.Telegram)
+	err := ur.db.QueryRow("select * from users where username = $1", &username).
+		Scan(&user.ID, &user.Username, &user.Password, &user.Email, &user.Telegram)
 	if err != nil {
 		return nil, err
 	}
 	return user, nil
 }
 
-func (ur *userRepository) FindUserByTelegram(userTelegram string) (userr *model.User, err error) {
+func (ur *userRepository) FindUserByTelegram(userTelegram string) (*model.User, error) {
 	fmt.Println(&userTelegram, userTelegram)
 	user := &model.User{}
-	err = ur.db.QueryRow("select * from users where telegram = $1", &userTelegram).Scan(&user.ID, &user.Login, &user.Email, &user.Name, &user.Surname, &user.Password, &user.Telegram)
+	err := ur.db.QueryRow("select * from users where telegram = $1", &userTelegram).
+		Scan(&user.ID, &user.Username, &user.Password, &user.Email, &user.Telegram)
 	fmt.Println("\n\n==== repo 1", user, userTelegram)
 	return user, err
 }

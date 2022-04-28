@@ -65,17 +65,19 @@ func main() {
 	})
 
 	router.POST("/registration", func(context *gin.Context) {
-		name := context.PostForm("your_name")
-		password := context.PostForm("your_pass")
+		username := context.PostForm("username")
+		password := context.PostForm("password")
+		email := context.PostForm("email")
+		telegram := context.PostForm("telegram")
+		fmt.Println(username)
+		fmt.Println(password)
+		fmt.Println(email)
+		fmt.Println(telegram)
 		user := &model.User{
-			ID:         "",
-			Login:      name,
-			Email:      name,
-			Name:       name,
-			Surname:    name,
-			Password:   password,
-			Telegram:   name,
-			Challenges: nil,
+			Username: username,
+			Password: password,
+			Email:    email,
+			Telegram: telegram,
 		}
 		fmt.Println(*user)
 		data, err := json.Marshal(user)

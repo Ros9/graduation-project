@@ -19,7 +19,7 @@ func main() {
 	router.LoadHTMLGlob("templates/*")
 	router.Static("/assets", "./assets")
 
-	dbConnString := "postgres://postgres:1234@localhost:5432/CityGoDB?sslmode=disable"
+	dbConnString := "postgres://postgres:@localhost:5432/citygodb?sslmode=disable"
 	dbConnection, err := sql.Open("postgres", dbConnString)
 
 	if err != nil {

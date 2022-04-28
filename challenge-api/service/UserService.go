@@ -51,14 +51,6 @@ func (cs *userService) GetUser(userID string) (*model.User, error) {
 		return nil, err
 	}
 	ucs, err := cs.challengeRepository.GetChallengesByUserId(user.ID)
-	// for _, uc := range ucs {
-	// 	userChallenge, err := cs.challengeRepository.FindChallengeById(uc.ChallengeId)
-	// 	if err != nil {
-	// 		fmt.Println("err =", err.Error())
-	// 	}
-	// 	user.Challenges = append(user.Challenges, userChallenge)
-	// }
-
 	user.Challenges = append(user.Challenges, ucs...)
 	return user, nil
 }
@@ -74,11 +66,9 @@ func (cs *userService) GetUserByTelegram(userTelegram string) (*model.UserTelegr
 	userChallenges, err := cs.challengeRepository.GetChallengesByUserId(user.ID)
 	userResponse := model.UserTelegram{
 		ID:       user.ID,
-		Login:    user.Login,
-		Email:    user.Email,
-		Name:     user.Name,
-		Surname:  user.Surname,
+		Username: user.Username,
 		Password: "",
+		Email:    user.Email,
 		Telegram: user.Telegram,
 	}
 	for _, challenge := range userChallenges {
@@ -95,7 +85,7 @@ func (cs *userService) GetUsers() ([]*model.User, error) {
 }
 
 func (cs *userService) GetTokenForUser(login, password string) (string, error) {
-	user, err := cs.userRepository.FindUserByLogin(login)
+	user, err := cs.userRepository.FindUserByUsername(login)
 	if err != nil {
 		return "", err
 	}
