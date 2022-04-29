@@ -90,6 +90,8 @@ func (cs *userService) GetTokenForUser(login, password string) (string, error) {
 		return "", err
 	}
 	if user.Password != password {
+		fmt.Println("user.Password =", user.Password)
+		fmt.Println("password =", password)
 		return "", errors.New("invalid user or password")
 	}
 	return utils.GetToken(user.ID)

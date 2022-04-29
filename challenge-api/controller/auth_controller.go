@@ -2,6 +2,7 @@ package controller
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"graduation-project/challenge-api/model"
 	"graduation-project/challenge-api/service"
@@ -37,6 +38,7 @@ func (ac *authController) GetUserToken() gin.HandlerFunc {
 		if err != nil {
 			context.JSON(400, "incorrect login or password")
 		}
+		fmt.Println(" token ===> ", token)
 		context.JSON(200, token)
 	}
 }

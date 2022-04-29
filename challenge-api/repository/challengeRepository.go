@@ -83,7 +83,7 @@ func (cr *challengeRepository) FindChallenges() ([]*model.Challenge, error) {
 
 //TODO
 func (cr *challengeRepository) GetChallengesByUserId(userId string) ([]*model.Challenge, error) {
-	q := fmt.Sprintf("select c.* from answers a join challenges c on c.id = a.challenge_id where a.user_id = '%s' and a.status = 1", userId)
+	q := fmt.Sprintf("select c.* from answers a join challenges c on c.id = a.challenge_id where a.user_id = '%s'", userId)
 	rows, err := cr.db.Query(q)
 	if err != nil {
 		fmt.Println("error =", err.Error())
@@ -98,6 +98,10 @@ func (cr *challengeRepository) GetChallengesByUserId(userId string) ([]*model.Ch
 			return nil, err
 		}
 		challenges = append(challenges, challenge)
+	}
+	fmt.Println("challenges of userId = ", userId, " ===> ")
+	for _, challenge := range challenges {
+		fmt.Println(challenge)
 	}
 	return challenges, nil
 }

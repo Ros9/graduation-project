@@ -48,6 +48,7 @@ func main() {
 			fmt.Println("error =", err.Error())
 			return
 		}
+		fmt.Println("body = ", string(data))
 		var token string
 		err = json.Unmarshal(body, &token)
 		if err != nil {
@@ -55,7 +56,7 @@ func main() {
 			return
 		}
 		fmt.Println("token =", token)
-		context.SetCookie("session_token", token, 180, "/", "", true, true)
+		context.SetCookie("session_token", token, 600, "/", "", true, true)
 		sessions[token] = Session{Username: name}
 		context.Redirect(301, "/index")
 	})
@@ -94,9 +95,16 @@ func main() {
 			return
 		}
 		fmt.Println("body =", string(body))
+		redirectUrl := "/login"
+		context.Redirect(301, redirectUrl)
 	})
 
 	router.GET("/challenge/:id", func(context *gin.Context) {
+		token, err := context.Cookie("session_token")
+		if err != nil {
+			fmt.Println(err.Error())
+			return
+		}
 		challengeId := context.Param("id")
 		fmt.Println("id =", challengeId)
 		url := "http://localhost:8080/challenge/" + challengeId
@@ -114,8 +122,10 @@ func main() {
 		fmt.Println("body =", string(body))
 		challenge := model.Challenge{}
 		err = json.Unmarshal(body, &challenge)
+		userInfo, err := getUserInfoByToken(token)
 		context.HTML(200, "challenge.html", gin.H{
 			"challenge": challenge,
+			"userInfo":  userInfo,
 		})
 	})
 
@@ -123,6 +133,7 @@ func main() {
 		token, err := context.Cookie("session_token")
 		if err != nil {
 			fmt.Println(err.Error())
+			return
 		}
 		challengeId := context.Param("id")
 		answerCode := context.PostForm("answer")
@@ -151,9 +162,16 @@ func main() {
 			return
 		}
 		fmt.Println("body =", string(body))
+		redirectUrl := "/challenge/" + challengeId
+		context.Redirect(301, redirectUrl)
 	})
 
 	router.GET("/index", func(context *gin.Context) {
+		token, err := context.Cookie("session_token")
+		if err != nil {
+			fmt.Println(err.Error())
+			return
+		}
 		url := "http://localhost:8080/challenges"
 		resp, err := httpClt.Get(url)
 		if err != nil {
@@ -172,8 +190,10 @@ func main() {
 			fmt.Println("error =", err.Error())
 			return
 		}
+		userInfo, err := getUserInfoByToken(token)
 		context.HTML(http.StatusOK, "index.html", gin.H{
 			"challenges": challenges,
+			"userInfo":   userInfo,
 		})
 	})
 
@@ -204,28 +224,41 @@ func main() {
 			fmt.Println("error =", err.Error())
 			return
 		}
-		context.HTML(http.StatusOK, "index.html", gin.H{
-			"user_info": userInfo,
+		fmt.Println("user =", userInfo)
+		context.HTML(http.StatusOK, "user_challenges.html", gin.H{
+			"userInfo": userInfo,
 		})
 	})
 
-	router.GET("/welcome", func(context *gin.Context) {
-		token, err := context.Cookie("session_token")
-		if err != nil {
-			fmt.Println(err.Error())
-		}
-		name, ok := sessions[token]
-		if !ok {
-			fmt.Println("name has not exist")
-		}
-		context.JSON(http.StatusOK, gin.H{
-			"hello": name,
-		})
-	})
-
-	router.GET("/test", func(context *gin.Context) {
-
+	router.GET("/health-check", func(context *gin.Context) {
+		context.JSON(200, "I am ok!")
 	})
 
 	router.Run(":8081")
+}
+
+func getUserInfoByToken(token string) (*model.User, error) {
+	url := "http://localhost:8080/user/info"
+	req, _ := http.NewRequest("GET", url, nil)
+	req.Header.Set("Authorization", "Bearer "+token)
+	fmt.Println("Authorization header =", req.Header.Get("Authorization"))
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		fmt.Println("error =", err.Error())
+		return nil, err
+	}
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		fmt.Println("error =", err.Error())
+		return nil, err
+	}
+	fmt.Println("body =", string(body))
+	userInfo := model.User{}
+	err = json.Unmarshal(body, &userInfo)
+	if err != nil {
+		fmt.Println("error =", err.Error())
+		return nil, err
+	}
+	fmt.Println("user =", userInfo)
+	return &userInfo, nil
 }

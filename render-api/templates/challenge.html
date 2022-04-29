@@ -29,15 +29,6 @@
                 <a href="/profile"><span class="fa fa-cogs"></span> Profile</a>
             </li>
         </ul>
-
-        <div class="footer">
-            <p>
-                bebeka
-            </p>
-            <p>
-                pepega
-            </p>
-        </div>
     </nav>
 
     <!-- Page Content  -->
@@ -59,7 +50,7 @@
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="nav navbar-nav ml-auto">
                         <li class="nav-item active">
-                            <a class="nav-link" href="#">Alisher</a>
+                            <a class="nav-link" href="#">{{.userInfo.Username}}</a>
                         </li>
                     </ul>
                 </div>
@@ -70,59 +61,46 @@
         <div class="row gx-5">
             <div class="col-md-6 mb-4">
                 <div class="bg-image hover-overlay ripple shadow-2-strong rounded-5" data-mdb-ripple-color="light">
-                    <img src="https://mdbcdn.b-cdn.net/img/new/slides/080.webp" class="img-fluid" />
+                    <img src="https://mdbcdn.b-cdn.net/img/new/slides/080.webp" class="img-fluid"/>
                     <a href="#!">
                         <div class="mask" style="background-color: rgba(251, 251, 251, 0.15);"></div>
                     </a>
                 </div>
             </div>
-
+            <br>
             <div class="col-md-6 mb-4">
                 <h4><strong>{{.challenge.Title}}</strong></h4>
                 <p class="text-muted">
                     {{.challenge.Description}}
                 </p>
-                <form action="" method="post">
-                    <div class="form-group">
-                        <label for="answer"><i class="zmdi zmdi-account material-icons-name"></i></label>
-                        <input type="text" name="answer" id="answer" placeholder="Answer"/>
-                    </div>
-                    <div class="form-group form-button">
-                        <input type="submit" class="form-submit" value="Submit"/>
-                    </div>
-                </form>
             </div>
+            <br>
         </div>
-
         <hr>
+        <dl class="row">
+            <dt class="col-sm-3">Sponsor</dt>
+            <dd class="col-sm-9">IITU</dd>
 
-        <!--Section: News of the day-->
+            <dt class="col-sm-3">Start Date</dt>
+            <dd class="col-sm-9">25 April</dd>
 
-        <h2 class="mb-4">Sidebar Particular Challenge</h2>
-        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et
-            dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex
-            ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat
-            nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit
-            anim id est laborum.</p>
-        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et
-            dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex
-            ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat
-            nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit
-            anim id est laborum.</p>
-        <div>
-            <h1>Challenge</h1>
-            {{.challenge.Title}}
-            <br>
-            {{.challenge.Description}}
-            <br>
-            {{.start_date}}
-            <br>
-            {{.end_date}}
-            {{.tags}}
+            <dt class="col-sm-3">End Date</dt>
+            <dd class="col-sm-9">2 May</dd>
+        </dl>
+        <hr>
+        <div class="col-md-6 mb-4">
+            <form action="" method="post">
+                <label class="sr-only" for="inputHelpBlock">Input with help text</label>
+                <input type="text" id="inputHelpBlock" class="form-control" aria-describedby="helpBlock"
+                       name="answer" placeholder="Answer">
+                <br>
+                <div class="form-group form-button">
+                    <input type="submit" class="form-submit" value="Send answer"/>
+                </div>
+            </form>
         </div>
     </div>
 </div>
-
 <script src="../assets/js/jquery.min.js"></script>
 <script src="../assets/js/popper.js"></script>
 <script src="../assets/js/bootstrap.min.js"></script>

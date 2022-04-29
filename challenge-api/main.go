@@ -2,16 +2,12 @@ package main
 
 import (
 	"database/sql"
-	"fmt"
-	"graduation-project/challenge-api/controller"
-	"graduation-project/challenge-api/repository"
-	"graduation-project/challenge-api/service"
-	"graduation-project/challenge-api/utils"
-	"net/http"
-
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
 	"github.com/prometheus/common/log"
+	"graduation-project/challenge-api/controller"
+	"graduation-project/challenge-api/repository"
+	"graduation-project/challenge-api/service"
 )
 
 func main() {
@@ -118,42 +114,9 @@ func main() {
 	router.Handle("PUT", "/bonus/:id", bonusController.UpdateBonus())
 	router.Handle("DELETE", "/bonus/:id", bonusController.DeleteBonus())
 
-	router.GET("/index", func(c *gin.Context) {
-		type Challenge struct {
-			Title       string
-			Description string
-		}
-		challenges := []Challenge{
-			{
-				Title:       "Almaty1",
-				Description: "About trains",
-			},
-			{
-				Title:       "Abay",
-				Description: "About kazakh poet",
-			},
-			{
-				Title:       "Something",
-				Description: "About something",
-			},
-		}
-		c.HTML(http.StatusOK, "index.html", gin.H{
-			"challenges": challenges,
-		})
+	router.GET("/health-check", func(context *gin.Context) {
+		context.JSON(200, "I am ok!")
 	})
-
-	token, err := utils.GetToken("Mukha")
-	if err != nil {
-		fmt.Println("err =", err.Error())
-	}
-	fmt.Println("token =", token)
-	fmt.Println()
-	fmt.Println()
-	name, err := utils.ParseToken(token, []byte("qwerty12345"))
-	if err != nil {
-		fmt.Println("err =", err.Error())
-	}
-	fmt.Println("name =", name)
 
 	router.Run(":8080")
 }
