@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fmt"
 	"graduation-project/challenge-api/model"
 	"graduation-project/challenge-api/repository"
 
@@ -18,10 +19,12 @@ type ChallengeService interface {
 
 type challengeService struct {
 	challengeRepository repository.ChallengeRepository
+	attachmentService   AttachmentService
 }
 
-func NewChallengeService(challengeRepository repository.ChallengeRepository) ChallengeService {
-	return &challengeService{challengeRepository}
+func NewChallengeService(challengeRepository repository.ChallengeRepository,
+	attachmentService AttachmentService) ChallengeService {
+	return &challengeService{challengeRepository, attachmentService}
 }
 
 func (cs *challengeService) CreateChallenge(challenge *model.Challenge) (*model.Challenge, error) {
@@ -42,11 +45,33 @@ func (cs *challengeService) GetChallenge(challengeID string) (*model.Challenge, 
 	if err != nil {
 		return nil, err
 	}
+	attachment, err := cs.attachmentService.GetAttachmentByChallengeId(challengeID)
+	if err != nil {
+		fmt.Println("error when get challenge =", err.Error())
+	}
+	if attachment != nil {
+		challenge.Attachments = []model.Attachment{*attachment}
+	}
 	return challenge, nil
 }
 
 func (cs *challengeService) GetChallenges() ([]*model.Challenge, error) {
-	return cs.challengeRepository.FindChallenges()
+	challenges, err := cs.challengeRepository.FindChallenges()
+	if err != nil {
+		return nil, err
+	}
+	for _, challenge := range challenges {
+		attachment, err := cs.attachmentService.GetAttachmentByChallengeId(challenge.ID)
+		if err != nil {
+			fmt.Println("error when get challenge =", err.Error())
+		}
+		if attachment != nil {
+			challenge.Attachments = append(challenge.Attachments, *attachment)
+		}
+		fmt.Println("attachment = ", *attachment)
+	}
+	fmt.Println("all attachments of challenges = ", challenges[0].Attachments)
+	return challenges, nil
 }
 
 func (cs *challengeService) GetChallengesTgResp() ([]*model.ChallengeTelegramResponse, error) {

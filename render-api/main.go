@@ -53,6 +53,7 @@ func main() {
 		err = json.Unmarshal(body, &token)
 		if err != nil {
 			fmt.Print("error =", err.Error())
+			context.Redirect(301, "/login")
 			return
 		}
 		fmt.Println("token =", token)

@@ -13,6 +13,7 @@ type AttachmentService interface {
 	CreateAttachment(attachment *model.Attachment) (*model.Attachment, error)
 	GetAttachment(attachmentID string) (*model.Attachment, error)
 	GetAttachments() ([]*model.Attachment, error)
+	GetAttachmentByChallengeId(challengeId string) (*model.Attachment, error)
 }
 
 type attachmentService struct {
@@ -57,4 +58,8 @@ func (as *attachmentService) GetAttachment(attachmentId string) (*model.Attachme
 
 func (as *attachmentService) GetAttachments() ([]*model.Attachment, error) {
 	return []*model.Attachment{}, nil
+}
+
+func (as *attachmentService) GetAttachmentByChallengeId(challengeId string) (*model.Attachment, error) {
+	return as.attachmentRepository.FindAttachmentByChallengeId(challengeId)
 }

@@ -21,13 +21,16 @@ type UserService interface {
 type userService struct {
 	userRepository      repository.UserRepository
 	challengeRepository repository.ChallengeRepository
+	attachmentService   AttachmentService
 }
 
 func NewUserService(userRepository repository.UserRepository,
-	challengeRepository repository.ChallengeRepository) UserService {
+	challengeRepository repository.ChallengeRepository,
+	attachmentService AttachmentService) UserService {
 	return &userService{
 		userRepository,
 		challengeRepository,
+		attachmentService,
 	}
 }
 
@@ -51,6 +54,16 @@ func (cs *userService) GetUser(userID string) (*model.User, error) {
 		return nil, err
 	}
 	ucs, err := cs.challengeRepository.GetChallengesByUserId(user.ID)
+	for _, challenge := range ucs {
+		attachment, err := cs.attachmentService.GetAttachmentByChallengeId(challenge.ID)
+		if err != nil {
+			fmt.Println("error when get challenge =", err.Error())
+		}
+		if attachment != nil {
+			challenge.Attachments = append(challenge.Attachments, *attachment)
+		}
+		fmt.Println("attachment = ", *attachment)
+	}
 	user.Challenges = append(user.Challenges, ucs...)
 	return user, nil
 }

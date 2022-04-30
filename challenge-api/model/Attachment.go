@@ -7,5 +7,5 @@ import (
 type Attachment struct {
 	ID    string          `json:"id"`
 	Title string          `json:"title"`
-	File  *multipart.File `json:"file,omitempty"`
+	File  *multipart.File `json:"-"`
 }

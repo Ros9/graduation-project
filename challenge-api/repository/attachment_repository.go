@@ -9,6 +9,7 @@ import (
 type AttachmentRepository interface {
 	CreateAttachment(attachment *model.Attachment) (*model.Attachment, error)
 	FindAttachmentById(attachmentId string) (*model.Attachment, error)
+	FindAttachmentByChallengeId(title string) (*model.Attachment, error)
 }
 
 type attachmentRepository struct {
@@ -43,6 +44,16 @@ func (ar *attachmentRepository) CreateAttachment(attachment *model.Attachment) (
 func (ar *attachmentRepository) FindAttachmentById(attachmentId string) (*model.Attachment, error) {
 	attachment := &model.Attachment{}
 	err := ar.db.QueryRow("select * from attachments where id = $1", &attachmentId).
+		Scan(&attachment.ID, &attachment.Title)
+	if err != nil {
+		return nil, err
+	}
+	return attachment, nil
+}
+
+func (ar *attachmentRepository) FindAttachmentByChallengeId(title string) (*model.Attachment, error) {
+	attachment := &model.Attachment{}
+	err := ar.db.QueryRow("select * from attachments where title = $1", &title).
 		Scan(&attachment.ID, &attachment.Title)
 	if err != nil {
 		return nil, err
