@@ -231,6 +231,14 @@ func main() {
 		})
 	})
 
+	router.GET("/guilds", func(context *gin.Context) {
+		context.HTML(200, "guilds.html", nil)
+	})
+
+	router.GET("/achievements", func(context *gin.Context) {
+		context.HTML(200, "achievements.html", nil)
+	})
+
 	router.GET("/health-check", func(context *gin.Context) {
 		context.JSON(200, "I am ok!")
 	})
