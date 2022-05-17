@@ -2,6 +2,7 @@ package repository
 
 import (
 	"database/sql"
+	"fmt"
 	"graduation-project/challenge-api/model"
 
 	"github.com/prometheus/common/log"
@@ -37,8 +38,9 @@ func NewAnswerRepository(db *sql.DB) AnswerRepository {
 }
 
 func (ar *answerRepository) CreateAnswer(answer *model.Answer) (*model.Answer, error) {
-	row := ar.db.QueryRow("insert into answers (id, user_id, challenge_id, answer) "+
-		"values ($1, $2, $3, $4)", &answer.ID, &answer.UserID, &answer.ChallengeID, &answer.Answer)
+	fmt.Println("\n\nans rep", answer)
+	row := ar.db.QueryRow("insert into answers (id, user_id, challenge_id, answer, status, created_at) "+
+		"values ($1, $2, $3, $4, $5, now())", &answer.ID, &answer.UserID, &answer.ChallengeID, &answer.Answer, &answer.Status)
 	if row.Err() != nil {
 		return nil, row.Err()
 	}

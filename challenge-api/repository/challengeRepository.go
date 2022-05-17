@@ -14,6 +14,8 @@ type ChallengeRepository interface {
 	FindChallenges() ([]*model.Challenge, error)
 	GetChallengesByUserId(userId string) ([]*model.Challenge, error)
 	GetChallengeByAnswer(answer string) (*model.Challenge, error)
+	GetActiveChallengeByAnswer(answer string) (*model.Challenge, error)
+	FindActiveChallenges() ([]*model.Challenge, error)
 }
 
 type challengeRepository struct {
@@ -81,9 +83,29 @@ func (cr *challengeRepository) FindChallenges() ([]*model.Challenge, error) {
 	return challenges, nil
 }
 
+func (cr *challengeRepository) FindActiveChallenges() ([]*model.Challenge, error) {
+	q := "select * from challenges where end_time > now()"
+	rows, err := cr.db.Query(q)
+	if err != nil {
+		fmt.Println("error =", err.Error())
+	}
+	challenges := []*model.Challenge{}
+	for rows.Next() {
+		challenge := &model.Challenge{}
+		err := rows.Scan(&challenge.ID, &challenge.CompanyID, &challenge.Title, &challenge.Description,
+			&challenge.AnswerCode, &challenge.StartDate, &challenge.EndDate)
+		if err != nil {
+			fmt.Println("error =", err.Error())
+			return nil, err
+		}
+		challenges = append(challenges, challenge)
+	}
+	return challenges, nil
+}
+
 //TODO
 func (cr *challengeRepository) GetChallengesByUserId(userId string) ([]*model.Challenge, error) {
-	q := fmt.Sprintf("select c.* from answers a join challenges c on c.id = a.challenge_id where a.user_id = '%s'", userId)
+	q := fmt.Sprintf("select c.* from answers a join challenges c on c.id = a.challenge_id and a.status = 1 where a.user_id = '%s'", userId)
 	rows, err := cr.db.Query(q)
 	if err != nil {
 		fmt.Println("error =", err.Error())
@@ -109,6 +131,16 @@ func (cr *challengeRepository) GetChallengesByUserId(userId string) ([]*model.Ch
 func (cr *challengeRepository) GetChallengeByAnswer(answer string) (*model.Challenge, error) {
 	challenge := &model.Challenge{}
 	err := cr.db.QueryRow("select * from challenges where answer_code = $1", &answer).
+		Scan(&challenge.ID, &challenge.CompanyID, &challenge.Title, &challenge.Description, &challenge.AnswerCode, &challenge.StartDate, &challenge.EndDate)
+	if err != nil {
+		return nil, err
+	}
+	return challenge, nil
+}
+
+func (cr *challengeRepository) GetActiveChallengeByAnswer(answer string) (*model.Challenge, error) {
+	challenge := &model.Challenge{}
+	err := cr.db.QueryRow("select * from challenges where answer_code = $1 and end_time > now()", &answer).
 		Scan(&challenge.ID, &challenge.CompanyID, &challenge.Title, &challenge.Description, &challenge.AnswerCode, &challenge.StartDate, &challenge.EndDate)
 	if err != nil {
 		return nil, err

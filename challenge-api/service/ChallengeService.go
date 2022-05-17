@@ -75,7 +75,7 @@ func (cs *challengeService) GetChallenges() ([]*model.Challenge, error) {
 }
 
 func (cs *challengeService) GetChallengesTgResp() ([]*model.ChallengeTelegramResponse, error) {
-	challenges, err := cs.challengeRepository.FindChallenges()
+	challenges, err := cs.challengeRepository.FindActiveChallenges()
 	if err != nil {
 		return nil, err
 	}

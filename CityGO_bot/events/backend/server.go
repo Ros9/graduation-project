@@ -60,8 +60,8 @@ func GetAvailableChallenges() (challenges []models.Challenge, err error) {
 	return
 }
 
-func PostAnswerCode(code string) (resultMessage string, err error) {
-	answer := models.Answer{Answer: code}
+func PostAnswerCode(userID, code string) (resultMessage string, err error) {
+	answer := models.Answer{UserID: userID, Answer: code}
 	body, _ := json.Marshal(answer)
 
 	resp, err := http.Post(serverUrl+"answer/telegram", "application/json", bytes.NewBuffer(body))
@@ -76,6 +76,12 @@ func PostAnswerCode(code string) (resultMessage string, err error) {
 	json.Unmarshal(respBody, &result)
 	log.Printf("PostAnswerCode | Info: result - %v", result)
 
-	resultMessage = fmt.Sprintf("%v", result.Status)
+	//resultMessage = //fmt.Sprintf("%v", result.Status)
+	if result.Status == 1 {
+		resultMessage = fmt.Sprintf("Ура!!! Вы прошли челлендж %s!!!\n\nЗаходите на сайт CityGO.kz и проходите новые челленджи!\nА также вы можете воспользоваться командой /challenges чтобы посмотреть список активных челленджей. GO!", result.Challenge.Title)
+	} else if result.Status == 0 {
+		resultMessage = fmt.Sprintf("К сожалению код не подошел к активным челленджам :(\nПопробуй ввести снова!")
+	}
+
 	return
 }
