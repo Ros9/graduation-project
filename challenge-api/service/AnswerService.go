@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fmt"
 	"graduation-project/challenge-api/model"
 	"graduation-project/challenge-api/repository"
 
@@ -29,6 +30,8 @@ func (cs *answerService) CreateAnswer(answer *model.Answer) (*model.Answer, erro
 		return nil, err
 	}
 	answer.ID = id.String()
+
+	fmt.Println("\n\nans service", answer)
 	createdAnswer, err := cs.answerRepository.CreateAnswer(answer)
 	if err != nil {
 		return nil, err
@@ -49,8 +52,10 @@ func (cs *answerService) GetAnswers() ([]*model.Answer, error) {
 }
 
 func (cs *answerService) PostAnswerFromTelegram(answer *model.Answer) (*model.Result, error) {
-	challenge, err := cs.challengeRepository.GetChallengeByAnswer(answer.Answer)
+	challenge, err := cs.challengeRepository.GetActiveChallengeByAnswer(answer.Answer)
 	if err != nil {
+		answer.Status = 0
+		cs.CreateAnswer(answer)
 		return nil, err
 	}
 
@@ -59,6 +64,10 @@ func (cs *answerService) PostAnswerFromTelegram(answer *model.Answer) (*model.Re
 		result.Status = 1
 	}
 
+	answer.ChallengeID = challenge.ID
+	answer.Status = result.Status
+
+	cs.CreateAnswer(answer)
 	//todo Здесь еще надо сделать создание записи в таблице answers
 
 	return &result, nil
