@@ -55,7 +55,8 @@ func (cs *userService) GetUser(userID string) (*model.User, error) {
 	}
 	ucs, err := cs.challengeRepository.GetChallengesByUserId(user.ID)
 	for _, challenge := range ucs {
-		attachment, err := cs.attachmentService.GetAttachmentByChallengeId(challenge.ID)
+		challengeExternalId := "challenge" + challenge.ID
+		attachment, err := cs.attachmentService.GetAttachmentByExternalId(challengeExternalId)
 		if err != nil {
 			fmt.Println("error when get challenge =", err.Error())
 		}

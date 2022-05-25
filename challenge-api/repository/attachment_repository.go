@@ -9,7 +9,7 @@ import (
 type AttachmentRepository interface {
 	CreateAttachment(attachment *model.Attachment) (*model.Attachment, error)
 	FindAttachmentById(attachmentId string) (*model.Attachment, error)
-	FindAttachmentByChallengeId(title string) (*model.Attachment, error)
+	FindAttachmentByExternalId(title string) (*model.Attachment, error)
 }
 
 type attachmentRepository struct {
@@ -19,8 +19,7 @@ type attachmentRepository struct {
 func NewAttachmentRepository(db *sql.DB) AttachmentRepository {
 	preQueries := []string{
 		`create table attachments (
-			id text,
-			title text
+			external_id text
 		)`,
 	}
 	for _, query := range preQueries {
@@ -33,8 +32,11 @@ func NewAttachmentRepository(db *sql.DB) AttachmentRepository {
 }
 
 func (ar *attachmentRepository) CreateAttachment(attachment *model.Attachment) (*model.Attachment, error) {
-	row := ar.db.QueryRow("insert into attachments (id, title) "+
-		"values ($1, $2)", &attachment.ID, &attachment.Title)
+	//challenge_(challenge_id)
+	//company_(company_id)
+	//achievement_(achievement_id)
+	row := ar.db.QueryRow("insert into attachments (external_id) "+
+		"values ($1)", &attachment.ExternalId)
 	if row.Err() != nil {
 		return nil, row.Err()
 	}
@@ -44,17 +46,17 @@ func (ar *attachmentRepository) CreateAttachment(attachment *model.Attachment) (
 func (ar *attachmentRepository) FindAttachmentById(attachmentId string) (*model.Attachment, error) {
 	attachment := &model.Attachment{}
 	err := ar.db.QueryRow("select * from attachments where id = $1", &attachmentId).
-		Scan(&attachment.ID, &attachment.Title)
+		Scan(&attachment.ExternalId)
 	if err != nil {
 		return nil, err
 	}
 	return attachment, nil
 }
 
-func (ar *attachmentRepository) FindAttachmentByChallengeId(title string) (*model.Attachment, error) {
+func (ar *attachmentRepository) FindAttachmentByExternalId(externalId string) (*model.Attachment, error) {
 	attachment := &model.Attachment{}
-	err := ar.db.QueryRow("select * from attachments where title = $1", &title).
-		Scan(&attachment.ID, &attachment.Title)
+	err := ar.db.QueryRow("select * from attachments where external_id = $1", &externalId).
+		Scan(&attachment.ExternalId)
 	if err != nil {
 		return nil, err
 	}

@@ -45,7 +45,8 @@ func (cs *challengeService) GetChallenge(challengeID string) (*model.Challenge, 
 	if err != nil {
 		return nil, err
 	}
-	attachment, err := cs.attachmentService.GetAttachmentByChallengeId(challengeID)
+	challengeExternalId := "challenge" + challengeID
+	attachment, err := cs.attachmentService.GetAttachmentByExternalId(challengeExternalId)
 	if err != nil {
 		fmt.Println("error when get challenge =", err.Error())
 	}
@@ -61,7 +62,8 @@ func (cs *challengeService) GetChallenges() ([]*model.Challenge, error) {
 		return nil, err
 	}
 	for _, challenge := range challenges {
-		attachment, err := cs.attachmentService.GetAttachmentByChallengeId(challenge.ID)
+		challengeExternalId := "challenge" + challenge.ID
+		attachment, err := cs.attachmentService.GetAttachment(challengeExternalId)
 		if err != nil {
 			fmt.Println("error when get challenge =", err.Error())
 		}

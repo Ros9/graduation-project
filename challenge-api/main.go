@@ -13,8 +13,6 @@ import (
 
 func main() {
 	router := gin.Default()
-	router.LoadHTMLGlob("templates/*")
-	router.Static("/assets", "./assets")
 
 	dbConnString := "postgres://postgres:1234@localhost:5432/CityGoDB?sslmode=disable" //Alibi :)
 	//dbConnString := "postgres://postgres:@localhost:5432/citygodb?sslmode=disable"

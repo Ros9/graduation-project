@@ -2,7 +2,6 @@ package service
 
 import (
 	"fmt"
-	"github.com/google/uuid"
 	"graduation-project/challenge-api/model"
 	"graduation-project/challenge-api/repository"
 	"io"
@@ -13,7 +12,7 @@ type AttachmentService interface {
 	CreateAttachment(attachment *model.Attachment) (*model.Attachment, error)
 	GetAttachment(attachmentID string) (*model.Attachment, error)
 	GetAttachments() ([]*model.Attachment, error)
-	GetAttachmentByChallengeId(challengeId string) (*model.Attachment, error)
+	GetAttachmentByExternalId(challengeId string) (*model.Attachment, error)
 }
 
 type attachmentService struct {
@@ -25,16 +24,11 @@ func NewAttachmentService(attachmentRepository repository.AttachmentRepository) 
 }
 
 func (as *attachmentService) CreateAttachment(attachment *model.Attachment) (*model.Attachment, error) {
-	id, err := uuid.NewUUID()
-	if err != nil {
-		return nil, err
-	}
-	attachment.ID = id.String()
 	createdAttachment, err := as.attachmentRepository.CreateAttachment(attachment)
 	if err != nil {
 		return nil, err
 	}
-	out, err := os.Create(attachment.ID)
+	out, err := os.Create(attachment.ExternalId)
 	if err != nil {
 		fmt.Println("error =", err.Error())
 		return nil, err
@@ -60,6 +54,6 @@ func (as *attachmentService) GetAttachments() ([]*model.Attachment, error) {
 	return []*model.Attachment{}, nil
 }
 
-func (as *attachmentService) GetAttachmentByChallengeId(challengeId string) (*model.Attachment, error) {
-	return as.attachmentRepository.FindAttachmentByChallengeId(challengeId)
+func (as *attachmentService) GetAttachmentByExternalId(challengeId string) (*model.Attachment, error) {
+	return as.attachmentRepository.FindAttachmentByExternalId(challengeId)
 }
