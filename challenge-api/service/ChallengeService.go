@@ -72,7 +72,6 @@ func (cs *challengeService) GetChallenges() ([]*model.Challenge, error) {
 		}
 		fmt.Println("attachment = ", *attachment)
 	}
-	fmt.Println("all attachments of challenges = ", challenges[0].Attachments)
 	return challenges, nil
 }
 
