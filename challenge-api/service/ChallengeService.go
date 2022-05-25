@@ -70,7 +70,6 @@ func (cs *challengeService) GetChallenges() ([]*model.Challenge, error) {
 		if attachment != nil {
 			challenge.Attachments = append(challenge.Attachments, *attachment)
 		}
-		fmt.Println("attachment = ", *attachment)
 	}
 	return challenges, nil
 }
