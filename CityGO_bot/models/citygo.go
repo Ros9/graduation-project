@@ -1,6 +1,9 @@
 package models
 
-import "mime/multipart"
+import (
+	"mime/multipart"
+	"os/user"
+)
 
 type Achievement struct {
 	ID    string `json:"id"`
@@ -64,11 +67,9 @@ type Tag struct {
 
 type User struct {
 	ID       string `json:"id"`
-	Login    string `json:"login"`
+	Username string `json:"username"`
+	Password string `json:"-"`
 	Email    string `json:"email"`
-	Name     string `json:"name"`
-	Surname  string `json:"surname"`
-	Password string `json:"password"`
 	Telegram string `json:"telegram"`
 	IsAdmin  int    `json:"is_admin"`
 }
@@ -76,4 +77,12 @@ type User struct {
 type Result struct {
 	Status    int       `json:"status"`
 	Challenge Challenge `json:"challenge"`
+}
+
+//--------------
+
+type CommandHistoryItem struct {
+	ChatId int
+	User   user.User
+	Text   string
 }
