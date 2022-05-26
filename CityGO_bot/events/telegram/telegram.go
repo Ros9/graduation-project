@@ -4,6 +4,8 @@ import (
 	"errors"
 	"graduation-project/CityGO_bot/clients/telegram"
 	"graduation-project/CityGO_bot/events"
+
+	commandshistory "graduation-project/CityGO_bot/lib/commandsHistory"
 	"graduation-project/CityGO_bot/lib/e"
 )
 
@@ -49,22 +51,22 @@ func (p *Processor) Fetch(limit int) ([]events.Event, error) {
 	return res, nil
 }
 
-func (p *Processor) Process(event events.Event) error {
+func (p *Processor) Process(event events.Event, commandHistory *[]commandshistory.CommandHistoryItem) error {
 	switch event.Type {
 	case events.Message:
-		return p.processMessage(event)
+		return p.processMessage(event, commandHistory)
 	default:
 		return e.Wrap("can't process message", ErrUnknownEventType)
 	}
 }
 
-func (p *Processor) processMessage(event events.Event) error {
+func (p *Processor) processMessage(event events.Event, commandHistory *[]commandshistory.CommandHistoryItem) error {
 	meta, err := meta(event)
 	if err != nil {
 		return e.Wrap("can't process message", err)
 	}
 
-	if err := p.doCmd(event.Text, meta.ChatID, meta.Username); err != nil {
+	if err := p.doCmd(event.Text, meta.ChatID, meta.Username, commandHistory); err != nil {
 		return e.Wrap("can't process message", err)
 	}
 

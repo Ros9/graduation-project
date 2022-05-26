@@ -7,7 +7,7 @@ import (
 	tgClient "graduation-project/CityGO_bot/clients/telegram"
 	event_consumer "graduation-project/CityGO_bot/consumer/event-consumer"
 	"graduation-project/CityGO_bot/events/telegram"
-	"graduation-project/CityGO_bot/models"
+	commandshistory "graduation-project/CityGO_bot/lib/commandsHistory"
 )
 
 const (
@@ -15,14 +15,14 @@ const (
 	batchSize = 100
 )
 
-var commandHistory []models.CommandHistoryItem
+var commandHistory []commandshistory.CommandHistoryItem
 
 func main() {
 	eventsProcessor := telegram.New(
 		tgClient.New(tgBotHost, mustToken()),
 	)
 
-	commandHistory = append(commandHistory, models.CommandHistoryItem{ChatId: 1, Text: "TEST"})
+	//commandHistory = append(commandHistory, models.CommandHistoryItem{ChatId: 1, Text: "TEST"})
 
 	log.Print("service started")
 

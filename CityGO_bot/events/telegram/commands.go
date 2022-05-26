@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"graduation-project/CityGO_bot/events/backend"
+	commandshistory "graduation-project/CityGO_bot/lib/commandsHistory"
 	"graduation-project/CityGO_bot/models"
 	"io/ioutil"
 	"log"
@@ -22,7 +23,7 @@ type TestMessage struct {
 	Message string //`json: "message"`
 }
 
-func (p *Processor) doCmd(text string, chatID int, username string) error {
+func (p *Processor) doCmd(text string, chatID int, username string, commandHistory *[]commandshistory.CommandHistoryItem) error {
 	text = strings.TrimSpace(text)
 
 	log.Printf("got new command '%s' from '%s", text, username)
@@ -108,11 +109,55 @@ func (p *Processor) doCmd(text string, chatID int, username string) error {
 		commands := "Список всех комманд\n\n1. /challenges - Активные челленджи\n2. /mychallenges - Мои челленджи\n3. /mychallengesfullinfo - Полная инфа о моих челленджах\n4. /help - На помощь!"
 
 		if currentUser.IsAdmin == 1 {
-			commands += "\n\n Admin Commands\n1. /createchallenge"
+			commands += "\n\n Admin Commands\n1. /createchallenge\n2. /createcompany\n3. /createachievement"
 		}
 
 		return p.tg.SendMessage(chatID, commands)
+	case "/createchallenge":
+		if currentUser.IsAdmin != 1 {
+			return p.tg.SendMessage(chatID, msgCodeNotFound)
+		}
+		*commandHistory = append(*commandHistory, commandshistory.CommandHistoryItem{ChatId: chatID, Text: text, User: currentUser})
+		return p.tg.SendMessage(chatID, "Введите данные о челлендже в формате:\n\nCompanyID\nTitle\nDescription\nAnswerCode\nTagsIds (Пример - \"1,2,3\")\nStartDate (Пример - \"2022-01-27\")\nEndDate (Пример - \"2022-01-27\")")
 	default:
+
+		//fmt.Println("\n\n\nHandleEventsCOOOOOOOOOMM = ", commandHistory, "\n", *commandHistory, "\n", &commandHistory, "======\n\n\n")
+		fmt.Println("size:", len(*commandHistory))
+		if currentUser.IsAdmin == 1 && len(*commandHistory) > 0 {
+			history := *commandHistory
+			switch history[len(history)-1].Text {
+			case "/createchallenge":
+				lines, err := commandshistory.StringToLines(text)
+				if err != nil {
+					return p.tg.SendMessage(chatID, msgCodeNotFound)
+				}
+
+				challenge := models.Challenge{
+					CompanyID:   lines[0],
+					Title:       lines[1],
+					Description: lines[2],
+					AnswerCode:  lines[3],
+					TagsIds:     commandshistory.StringToIdList(lines[4]),     //ща сделаем через запятые
+					StartDate:   commandshistory.StringToDateFormat(lines[5]), //формат нужный
+					EndDate:     commandshistory.StringToDateFormat(lines[6]), //формат нужный
+				}
+				fmt.Println("CHALLENGE CREATE:", challenge)
+
+				backend.CreateChallenge(challenge)
+
+				*commandHistory = nil
+				return p.tg.SendMessage(chatID, "---")
+			default:
+				return p.tg.SendMessage(chatID, msgCodeNotFound)
+			}
+		}
+		// a := *commandHistory
+		// if len(a) > 0 {
+		// 	fmt.Println("\n\niiiii", a[len(a)-1], "\n\n")
+		// }
+
+		//a = append(a, commandshistory.CommandHistoryItem{ChatId: 1000, Text: "DRDRDRDR"})
+		//*commandHistory = a
 		resultMessage, err := backend.PostAnswerCode(currentUser.ID, text)
 		if err != nil {
 			log.Printf("doCmd | Error: %s", err.Error())

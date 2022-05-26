@@ -85,3 +85,7 @@ func PostAnswerCode(userID, code string) (resultMessage string, err error) {
 
 	return
 }
+
+func CreateChallenge(challenge models.Challenge) {
+	//Создание
+}
