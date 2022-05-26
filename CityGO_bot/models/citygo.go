@@ -70,6 +70,7 @@ type User struct {
 	Surname  string `json:"surname"`
 	Password string `json:"password"`
 	Telegram string `json:"telegram"`
+	IsAdmin  int    `json:"is_admin"`
 }
 
 type Result struct {

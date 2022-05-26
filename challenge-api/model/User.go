@@ -7,6 +7,7 @@ type User struct {
 	Email      string       `json:"email"`
 	Telegram   string       `json:"telegram"`
 	Challenges []*Challenge `json:"challenges"`
+	IsAdmin    int          `json:"is_admin"`
 }
 
 type UserTelegram struct {
@@ -16,4 +17,5 @@ type UserTelegram struct {
 	Email      string                       `json:"email"`
 	Telegram   string                       `json:"telegram"`
 	Challenges []*ChallengeTelegramResponse `json:"challenges"`
+	IsAdmin    int                          `json:"is_admin"`
 }
