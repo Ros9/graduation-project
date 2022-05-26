@@ -28,7 +28,8 @@ func (ac *attachmentController) UploadAttachment() gin.HandlerFunc {
 			context.String(http.StatusBadRequest, fmt.Sprintf("file err : %s", err.Error()))
 			return
 		}
-		externalId := context.Param("external_id")
+		externalId := context.PostForm("external_id")
+		fmt.Println("externalId =", externalId)
 		attachment := &model.Attachment{}
 		attachment.ExternalId = externalId
 		attachment.File = &file

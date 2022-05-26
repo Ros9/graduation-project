@@ -1,0 +1,230 @@
+.main {
+    margin-top: 100px;
+}
+.main h1 {
+    font-weight: 700;
+    font-size: 125px;
+    line-height: 120px;
+    display: flex;
+    align-items: center;
+    color: #242357;
+}
+.rec {
+    position: absolute;
+    width: 220px;
+    height: 280px;
+    left: 60%;
+    top: 25%;
+
+    background: #242357;
+    border-radius: 120px;
+    transform: rotate(141.7deg);
+}
+.rec2 {
+    position: absolute;
+    width: 200px;
+    height: 240px;
+    left: 15%;
+    top: 35%;
+    z-index: -1;
+    background: #8e8dce;
+    border-radius: 94px;
+    transform: rotate(20deg);
+}
+.main-info p {
+    font-weight: 200;
+    font-size: 30px;
+    line-height: 30px;
+    display: flex;
+    align-items: center;
+    text-align: right;
+    margin-top: 50px;
+    color: #242357;
+}
+.main-info {
+    display: flex;
+    justify-content: right;
+    align-items: center;
+}
+.sec2 {
+    border-radius: 80px;
+    background-color: #4743E0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+    padding: 50px 0;
+    margin-top: 100px;
+}
+.sec2 h3 {
+    font-weight: 700;
+    font-size: 40px;
+    line-height: 38px;
+    display: flex;
+    align-items: center;
+    color: #FFFFFF;
+}
+.sec2 p {
+    font-weight: 400;
+    font-size: 24px;
+    line-height: 23px;
+    color: #FFFFFF;
+}
+.burger, .pizza{
+    position: absolute;
+}
+.burger {
+    left: -80px;
+    bottom: -40px;
+}
+.pizza {
+    width: 500px;
+    top: -50px;
+    right: -200px;
+}
+
+.sec3 {
+    margin-top: 100px;
+
+}
+.s3-h3 {
+    font-weight: 700;
+    font-size: 32px;
+    line-height: 31px;
+    color: #242357;
+    margin-bottom: 50px;
+}
+.glovo {
+    border: 1px black solid;
+    border-radius: 30px;
+    overflow: hidden;
+}
+.g-header {
+    padding: 40px 50px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient( rgba(0, 0, 0, 0.8), rgba(61, 61, 61, 0.5)), url('../image/fon_glovo.png');
+    background-size: cover;
+}
+.g-header .date {
+    background-color: white;
+    border-radius: 10px;
+    padding: 10px 15px;
+
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 17px;
+    display: flex;
+    align-items: center;
+    color: #4743E0;
+}
+.g-info {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.g-info h3 {
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 72px;
+    display: flex;
+    align-items: center;
+    margin-left: 20px;
+    color: #FFFFFF;
+}
+.g-body {
+    padding: 30px 60px;
+}
+.g-body h3 {
+    font-weight: 700;
+    font-size: 48px;
+    line-height: 46px;
+    display: flex;
+    align-items: center;
+
+    color: #242357;
+}
+.g-body button {
+    background-color: #242357;
+    border-radius: 10px;
+    padding: 10px 15px;
+    border: none;
+    margin: 30px 0;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 15px;
+    display: flex;
+    align-items: center;
+
+    color: #FFFFFF;
+}
+.g-body p {
+    font-weight: 400;
+    font-size: 20px;
+    line-height: 19px;
+    color: #828282;
+}
+.h-header {
+    padding: 40px 50px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient( rgba(0, 0, 0, 0.8), rgba(61, 61, 61, 0.5)), url('../image/fon_ata.png');
+    background-size: cover;
+}
+.h-header .date {
+    background-color: white;
+    border-radius: 10px;
+    padding: 10px 15px;
+
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 17px;
+    display: flex;
+    align-items: center;
+    color: #4743E0;
+}
+.more {
+    font-weight: 400;
+    font-size: 32px;
+    line-height: 31px;
+    color: #242357;
+    border-radius: 23px;
+    border: 1px #242357 solid;
+    padding: 10px 70px;
+    background-color: white;
+    margin: 50px auto;
+
+}
+.more:hover {
+    background-color: #242357;
+    color: white;
+    transition: 0.2s linear;
+}
+.go-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+@media screen and (max-width: 1024px) {
+    .rec {
+        display: none;
+    }
+    .main h1 {
+        font-size: 100px;
+    }
+    .burger {
+        width: 200px;
+    }
+    .pizza {
+        width: 300px;
+        top: -50px;
+        right: -150px;
+    }
+    .g-info {
+        flex-direction: column;
+    }
+}

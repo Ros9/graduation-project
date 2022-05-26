@@ -1,0 +1,139 @@
+.main {
+    background-image: url("../image/almaty.png");
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+.main-sec {
+    padding: 100px 0 50px 0;
+}
+.museum {
+    width: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #FFFFFF;
+    border-radius: 8px;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 15px;
+    color: #242357;
+    padding: 10px 0;
+}
+.main-sec h2{
+    font-weight: 700;
+    font-size: 48px;
+    line-height: 46px;
+    display: flex;
+    align-items: center;
+    color: #FFFFFF;
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: white;
+    border: none;
+}
+.date {
+    font-weight: 400;
+    font-size: 36px;
+    line-height: 34px;
+    display: flex;
+    align-items: center;
+
+    color: #242357;
+}
+.profile {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.profile h3 {
+    font-weight: 400;
+    font-size: 24px;
+    line-height: 23px;
+    /* identical to box height */
+
+    display: flex;
+    align-items: center;
+
+    color: #000000;
+
+}
+.card-body p {
+    font-weight: 400;
+    font-size: 28px;
+    line-height: 31px;
+
+    color: #828282;
+}
+.input-sec input {
+    width: 100%;
+    padding: 20px 40px;
+
+    font-weight: 400;
+    font-size: 24px;
+    line-height: 23px;
+    background: #FFFFFF;
+    border: 3px solid #181B1A;
+    border-radius: 40px;
+}
+.list input {
+    width: 100%;
+    padding: 20px 40px;
+    font-weight: 400;
+    font-size: 24px;
+    line-height: 23px;
+    background: #242357;
+    color: white;
+    border: 3px solid #181B1A;
+    border-radius: 40px;
+}
+.list input::placeholder {
+    color: white;
+}
+.comments h3 {
+    font-style: normal;
+    font-weight: 700;
+    font-size: 32px;
+    line-height: 31px;
+    color: #242357;
+}
+.cart {
+    border: 3px solid #242357;
+    border-radius: 30px;
+    padding: 30px 40px;
+}
+.prof {
+    display: flex;
+    align-items: center;
+}
+.cart p {
+    font-weight: 400;
+    font-size: 24px;
+    line-height: 23px;
+    color: #000000;
+}
+.more {
+    font-weight: 400;
+    font-size: 32px;
+    line-height: 31px;
+    color: #242357;
+    border-radius: 23px;
+    border: 1px #242357 solid;
+    padding: 10px 70px;
+    background-color: white;
+    margin: 50px auto;
+
+}
+.more:hover {
+    background-color: #242357;
+    color: white;
+    transition: 0.2s linear;
+}
+.go-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

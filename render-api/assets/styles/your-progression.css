@@ -1,0 +1,119 @@
+.profile img {
+    width: 200px;
+    height: 200px;
+}
+.profile {
+    margin-top: 80px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.profile-info h2 {
+    font-weight: 400;
+    font-size: 72px;
+    line-height: 72px;
+    color: #242357;
+}
+.profile-info p {
+    font-weight: 400;
+    font-size: 24px;
+    line-height: 23px;
+    text-align: right;
+    color: #000000;
+}
+.info {
+    margin-top: 70px;
+}
+.info li {
+    font-weight: 400;
+    font-size: 33px;
+    line-height: 38px;
+    margin-bottom: 30px;
+}
+.contests h2 {
+    font-weight: 700;
+    font-size: 32px;
+    line-height: 31px;
+    color: #242357;
+}
+.contests .cart {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 35px 60px;
+    border-radius: 35px;
+    background: linear-gradient( rgba(0, 0, 0, 0.8), rgba(61, 61, 61, 0.5)), url('../image/fon_glovo.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+.contests .cart h3 {
+    font-weight: 400;
+    font-size: 32px;
+    line-height: 31px;
+    display: flex;
+    align-items: center;
+    color: #FFFFFF;
+}
+.type {
+    padding: 10px 15px;
+    border-radius: 8px;
+    background-color: white;
+
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 15px;
+    display: flex;
+    align-items: center;
+
+    color: #242357;
+}
+.contests {
+    margin-top: 80px;
+}
+.received {
+    margin: 80px 0;
+}
+.received h2 {
+    font-weight: 700;
+    font-size: 32px;
+    line-height: 31px;
+    color: #242357;
+}
+.received .cart {
+    width: 50%;
+    padding: 25px 50px;
+    background: #242357;
+    border-radius: 20px;
+}
+.received .pic-sec {
+    padding: 10px;
+    background: #FFFFFF;
+    border-radius: 10px;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.received .cart {
+    display: flex;
+}
+.received .cart p {
+    color: white;
+}
+@media screen and (max-width: 768px) {
+    .received .cart {
+        width: 100%;
+        flex-direction: column;
+    }
+    .received .cart p {
+        margin-top: 30px;
+        font-size: 1.3em;
+    }
+    .profile {
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+}
