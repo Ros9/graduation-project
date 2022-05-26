@@ -27,7 +27,8 @@ func NewUserRepository(db *sql.DB) UserRepository {
 			username text,
 			password text,
 			email text,
-			telegram text
+			telegram text, 
+			is_admin int
 		)`,
 	}
 	for _, query := range preQueries {
@@ -41,8 +42,8 @@ func NewUserRepository(db *sql.DB) UserRepository {
 }
 
 func (ur *userRepository) CreateUser(user *model.User) (*model.User, error) {
-	row := ur.db.QueryRow("insert into users (id, username, password, email, telegram) "+
-		"values ($1, $2, $3, $4, $5 )", &user.ID, &user.Username, &user.Password, &user.Email, &user.Telegram)
+	row := ur.db.QueryRow("insert into users (id, username, password, email, telegram, is_admin) "+
+		"values ($1, $2, $3, $4, $5, $6)", &user.ID, &user.Username, &user.Password, &user.Email, &user.Telegram, &user.IsAdmin)
 	if row.Err() != nil {
 		return nil, row.Err()
 	}
@@ -52,7 +53,7 @@ func (ur *userRepository) CreateUser(user *model.User) (*model.User, error) {
 func (ur *userRepository) FindUserById(userId string) (*model.User, error) {
 	user := &model.User{}
 	err := ur.db.QueryRow("select * from users where id = $1", &userId).
-		Scan(&user.ID, &user.Username, &user.Email, &user.Password, &user.Telegram)
+		Scan(&user.ID, &user.Username, &user.Email, &user.Password, &user.Telegram, &user.IsAdmin)
 	if err != nil {
 		return nil, err
 	}
@@ -66,7 +67,7 @@ func (ur *userRepository) FindUsers() ([]*model.User, error) {
 func (ur *userRepository) FindUserByUsername(username string) (*model.User, error) {
 	user := &model.User{}
 	err := ur.db.QueryRow("select * from users where username = $1", &username).
-		Scan(&user.ID, &user.Username, &user.Password, &user.Email, &user.Telegram)
+		Scan(&user.ID, &user.Username, &user.Password, &user.Email, &user.Telegram, &user.IsAdmin)
 	if err != nil {
 		return nil, err
 	}
@@ -77,7 +78,7 @@ func (ur *userRepository) FindUserByTelegram(userTelegram string) (*model.User, 
 	fmt.Println(&userTelegram, userTelegram)
 	user := &model.User{}
 	err := ur.db.QueryRow("select * from users where telegram = $1", &userTelegram).
-		Scan(&user.ID, &user.Username, &user.Password, &user.Email, &user.Telegram)
-	fmt.Println("\n\n==== repo 1", user, userTelegram)
+		Scan(&user.ID, &user.Username, &user.Password, &user.Email, &user.Telegram, &user.IsAdmin)
+	fmt.Println("\n\n==== repo 1 ADMMMM", user, userTelegram)
 	return user, err
 }

@@ -104,6 +104,14 @@ func (p *Processor) doCmd(text string, chatID int, username string) error {
 		return p.sendHelp(chatID, username)
 	case StartCmd:
 		return p.sendHello(chatID)
+	case "/commands":
+		commands := "Список всех комманд\n\n1. /challenges - Активные челленджи\n2. /mychallenges - Мои челленджи\n3. /mychallengesfullinfo - Полная инфа о моих челленджах\n4. /help - На помощь!"
+
+		if currentUser.IsAdmin == 1 {
+			commands += "\n\n Admin Commands\n1. /createchallenge"
+		}
+
+		return p.tg.SendMessage(chatID, commands)
 	default:
 		resultMessage, err := backend.PostAnswerCode(currentUser.ID, text)
 		if err != nil {
