@@ -1,26 +1,25 @@
 package service
 
 import (
-	"errors"
+	"fmt"
 	"github.com/google/uuid"
 	"graduation-project/challenge-api/model"
 	"graduation-project/challenge-api/repository"
-	"graduation-project/challenge-api/utils"
 )
 
 type CompanyService interface {
 	CreateCompany(answer *model.Company) (*model.Company, error)
 	GetCompany(companyId string) (*model.Company, error)
 	GetCompanies() ([]*model.Company, error)
-	GetTokenForCompany(login, password string) (string, error)
 }
 
 type companyService struct {
 	companyRepository repository.CompanyRepository
+	attachmentService AttachmentService
 }
 
-func NewCompanyService(companyRepository repository.CompanyRepository) CompanyService {
-	return &companyService{companyRepository}
+func NewCompanyService(companyRepository repository.CompanyRepository, attachmentService AttachmentService) CompanyService {
+	return &companyService{companyRepository, attachmentService}
 }
 
 func (cs *companyService) CreateCompany(company *model.Company) (*model.Company, error) {
@@ -41,20 +40,17 @@ func (cs *companyService) GetCompany(companyID string) (*model.Company, error) {
 	if err != nil {
 		return nil, err
 	}
+	challengeExternalId := "company_" + company.ID
+	attachment, err := cs.attachmentService.GetAttachmentByExternalId(challengeExternalId)
+	if err != nil {
+		fmt.Println("error when get challenge =", err.Error())
+	}
+	if attachment != nil {
+		company.ImageUrl = "/assets/image/" + challengeExternalId
+	}
 	return company, nil
 }
 
 func (cs *companyService) GetCompanies() ([]*model.Company, error) {
 	return []*model.Company{}, nil
-}
-
-func (cs *companyService) GetTokenForCompany(login, password string) (string, error) {
-	company, err := cs.companyRepository.FindCompanyByLogin(login)
-	if err != nil {
-		return "", err
-	}
-	if company.Password != password {
-		return "", errors.New("invalid company or password")
-	}
-	return utils.GetToken(company.ID)
 }

@@ -14,8 +14,8 @@ import (
 func main() {
 	router := gin.Default()
 
-	dbConnString := "postgres://postgres:1234@localhost:5432/CityGoDB?sslmode=disable" //Alibi :)
-	//dbConnString := "postgres://postgres:@localhost:5432/citygodb?sslmode=disable"
+	//dbConnString := "postgres://postgres:1234@localhost:5432/CityGoDB?sslmode=disable" //Alibi :)
+	dbConnString := "postgres://postgres:@localhost:5432/citygodb?sslmode=disable"
 	dbConnection, err := sql.Open("postgres", dbConnString)
 
 	if err != nil {
@@ -34,7 +34,7 @@ func main() {
 	bonusRepository := repository.NewBonusRepository(dbConnection)
 
 	attachmentService := service.NewAttachmentService(attachmentRepository)
-	companyService := service.NewCompanyService(companyRepository)
+	companyService := service.NewCompanyService(companyRepository, attachmentService)
 	userService := service.NewUserService(userRepository, challengeRepository, attachmentService)
 	challengeService := service.NewChallengeService(challengeRepository, attachmentService)
 	answerService := service.NewAnswerService(answerRepository, challengeRepository)
@@ -52,7 +52,7 @@ func main() {
 	tagController := controller.NewTagController(tagService)
 	achievementController := controller.NewAchievementController(achievementService)
 	bonusController := controller.NewBonusController(bonusService)
-	authController := controller.NewAuthController(userService, companyService)
+	authController := controller.NewAuthController(userService)
 
 	router.Handle("POST", "/auth/user", authController.GetUserToken())
 	router.Handle("POST", "/auth/company", authController.GetUserToken())
@@ -65,7 +65,7 @@ func main() {
 	router.Handle("PUT", "/user/:id", userController.UpdateUser())
 	router.Handle("DELETE", "/user/:id", userController.DeleteUser())
 
-	router.Handle("POST", "/company/registration", companyController.CreateCompany())
+	router.Handle("POST", "/company", companyController.CreateCompany())
 	router.Handle("GET", "/company/:id", companyController.GetCompany())
 	router.Handle("GET", "/company", companyController.GetCompanies())
 	router.Handle("PUT", "/company/:id", companyController.UpdateCompany())

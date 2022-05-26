@@ -28,7 +28,7 @@ func (as *attachmentService) CreateAttachment(attachment *model.Attachment) (*mo
 	if err != nil {
 		return nil, err
 	}
-	fileName := "../render-api/assets/images/" + attachment.ExternalId
+	fileName := "../render-api/assets/image/" + attachment.ExternalId
 	out, err := os.Create(fileName)
 	if err != nil {
 		fmt.Println("error =", err.Error())

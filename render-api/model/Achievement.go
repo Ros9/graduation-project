@@ -5,5 +5,4 @@ type Achievement struct {
 	Title       string `json:"title"`
 	Description string `json:"description"`
 	Tags        []Tag  `json:"tags"`
-	ImageUrl    string `json:"image_url"`
 }

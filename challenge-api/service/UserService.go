@@ -61,7 +61,7 @@ func (cs *userService) GetUser(userID string) (*model.User, error) {
 			fmt.Println("error when get challenge =", err.Error())
 		}
 		if attachment != nil {
-			challenge.Attachments = append(challenge.Attachments, *attachment)
+			challenge.ImageUrl = "/assets/image/" + challengeExternalId
 		}
 		fmt.Println("attachment = ", *attachment)
 	}

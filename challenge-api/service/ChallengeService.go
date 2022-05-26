@@ -45,13 +45,13 @@ func (cs *challengeService) GetChallenge(challengeID string) (*model.Challenge, 
 	if err != nil {
 		return nil, err
 	}
-	challengeExternalId := "challenge" + challengeID
+	challengeExternalId := "challenge_" + challenge.ID
 	attachment, err := cs.attachmentService.GetAttachmentByExternalId(challengeExternalId)
 	if err != nil {
 		fmt.Println("error when get challenge =", err.Error())
 	}
 	if attachment != nil {
-		challenge.Attachments = []model.Attachment{*attachment}
+		challenge.ImageUrl = "/assets/image/" + challengeExternalId
 	}
 	return challenge, nil
 }
@@ -62,13 +62,13 @@ func (cs *challengeService) GetChallenges() ([]*model.Challenge, error) {
 		return nil, err
 	}
 	for _, challenge := range challenges {
-		challengeExternalId := "challenge" + challenge.ID
-		attachment, err := cs.attachmentService.GetAttachment(challengeExternalId)
+		challengeExternalId := "challenge_" + challenge.ID
+		attachment, err := cs.attachmentService.GetAttachmentByExternalId(challengeExternalId)
 		if err != nil {
 			fmt.Println("error when get challenge =", err.Error())
 		}
 		if attachment != nil {
-			challenge.Attachments = append(challenge.Attachments, *attachment)
+			challenge.ImageUrl = "/assets/image/" + challengeExternalId
 		}
 	}
 	return challenges, nil
@@ -91,6 +91,16 @@ func (cs *challengeService) GetChallengesByUserId(userId string) ([]*model.Chall
 	challenges, err := cs.challengeRepository.GetChallengesByUserId(userId)
 	if err != nil {
 		return nil, err
+	}
+	for _, challenge := range challenges {
+		challengeExternalId := "challenge_" + challenge.ID
+		attachment, err := cs.attachmentService.GetAttachmentByExternalId(challengeExternalId)
+		if err != nil {
+			fmt.Println("error when get challenge =", err.Error())
+		}
+		if attachment != nil {
+			challenge.ImageUrl = "/assets/image/" + challengeExternalId
+		}
 	}
 	return challenges, nil
 }

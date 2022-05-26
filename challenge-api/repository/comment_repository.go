@@ -21,8 +21,7 @@ func NewCommentRepository(db *sql.DB) CommentRepository {
 			id text,
 			challenge_id text,
 			user_id text,
-			description text,
-			parent_comment_id text
+			description text
 		)`,
 	}
 	for _, query := range preQueries {
@@ -35,8 +34,8 @@ func NewCommentRepository(db *sql.DB) CommentRepository {
 }
 
 func (cr *commentRepository) CreateComment(comment *model.Comment) (*model.Comment, error) {
-	row := cr.db.QueryRow("insert into comments (id, challenge_id, user_id, description, parent_comment_id) "+
-		"values ($1, $2, $3, $4, $5)", &comment.ID, &comment.ChallengeID, &comment.UserId, &comment.Description, &comment.ParentCommentID)
+	row := cr.db.QueryRow("insert into comments (id, challenge_id, user_id, description) "+
+		"values ($1, $2, $3, $4)", &comment.ID, &comment.ChallengeID, &comment.UserId, &comment.Description)
 	if row.Err() != nil {
 		return nil, row.Err()
 	}
@@ -46,7 +45,7 @@ func (cr *commentRepository) CreateComment(comment *model.Comment) (*model.Comme
 func (cr *commentRepository) FindCommentById(commentId string) (*model.Comment, error) {
 	comment := &model.Comment{}
 	err := cr.db.QueryRow("select * from comments where id = $1", &commentId).
-		Scan(&comment.ID, &comment.ChallengeID, &comment.UserId, &comment.Description, &comment.ParentCommentID)
+		Scan(&comment.ID, &comment.ChallengeID, &comment.UserId, &comment.Description)
 	if err != nil {
 		return nil, err
 	}
