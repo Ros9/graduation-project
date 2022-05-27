@@ -108,6 +108,34 @@
                     in voluptate velit esse cillum dolore eu fugiat nulla pariatur...</p>
             </div>
         </div>
+        <hr>
+        <div>
+            {{$isOnline := .isOnline}}
+            {{$challenges := .challenges}}
+            {{$companies := .companies}}
+            {{range $challenge := $challenges}}
+            <div class="glovo mt-5">
+                <div class="h-header">
+                    <div class="g-info">
+                        {{range $company := $companies}}
+                        {{if eq $challenge.CompanyID $company.ID}}
+                        <img src="{{$company.ImageUrl}}" alt="">
+                        <h3>{{$company.Name}}</h3>
+                        {{end}}
+                        {{end}}
+                    </div>
+                    <div class="date">Until {{$challenge.EndDate}}</div>
+                </div>
+                    <a href="/challenge/{{$challenge.ID}}" style="text-decoration:none">
+                    <div class="g-body">
+                        <h3>Title {{$challenge.ID}}</h3>
+                        <button>Tag</button>
+                        <p>Description {{$challenge.Description}}</p>
+                    </div>
+                </a>
+            </div>
+            {{end}}
+        </div>
         <div class="go-center">
             <button class="more">See more</button>
         </div>

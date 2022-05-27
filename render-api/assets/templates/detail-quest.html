@@ -42,41 +42,43 @@
         </div>
     </div>
 </nav>
+{{$challenge := .challenge}}
+{{$company := .company}}
 <div class="main">
     <div class="container main-sec">
         <div class="museum mb-xl-3">
             Museum
         </div>
-        <h2>Разгадай задачу <br>
-            и получи бесплатную доставку!</h2>
+        <h2>{{$challenge.Title}}</h2>
     </div>
 </div>
 <div class="crd mt-5">
     <div class="container">
         <div class="card-header">
             <div class="profile">
-                <img src="/assets/image/glovo.png" alt="">
-                <h3 class="mx-3">Glovo Kazakhstan</h3>
+                <img src="{{$company.ImageUrl}}" alt="">
+                <h3 class="mx-3">{{$company.Name}}</h3>
             </div>
             <div class="date">
-                Until 5.05.22
+                Until {{$challenge.EndDate}}
             </div>
         </div>
         <div class="card-body mt-xl-3">
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-            do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-            Ut enim ad minim veniam, quis nostrud exercitation ullamco
-            laboris nisi ut aliquip ex ea commodo consequat. Duis aute
-            irure dolor in reprehenderit in
-            voluptate velit esse cillum dolore eu fugiat nulla pariatur...</p>
+            <p>{{$challenge.Description}}</p>
         </div>
         <div class="input-sec mt-5">
-            <input type="text" placeholder="Напишите свой ответ...">
+            <form action="/pepega">
+                <input type="text" placeholder="Напишите свой ответ...">
+                <input type="submit" hidden>
+            </form>
         </div>
         <div class="comments mt-5">
             <h3>Comments:</h3>
             <div class="list mt-4">
-                <input type="text" placeholder="Напишите свой комментарий...">
+                <form action="/nepepega">
+                    <input type="text" placeholder="Напишите свой комментарий...">
+                    <input type="submit" hidden>
+                </form>
                 <div class="cart mt-4">
                     <div class="prof">
                         <img src="/assets/image/prof-pic.png" alt="">

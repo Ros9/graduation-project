@@ -16,19 +16,17 @@
 <div class="main">
     <h2>CityGO</h2>
 
-    <form>
+    <form method="POST" action="/login">
         <div class="mb-3">
-            <label for="exampleInputEmail1" class="form-label">Email</label>
-            <input placeholder="Email" type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+            <label for="exampleInputUsername" class="form-label">Username</label>
+            <input placeholder="Username" type="text" class="form-control" id="exampleInputUsername" name="username">
         </div>
         <div class="mb-3">
             <label for="exampleInputPassword1" class="form-label">Password</label>
-            <input placeholder="Password" type="password" class="form-control" id="exampleInputPassword1">
+            <input placeholder="Password" type="password" class="form-control" id="exampleInputPassword1" name="password">
         </div>
         <button type="submit" class="btn btn-primary mt-4 mb-4">Sign In</button>
-        <p >Don’t have an account? <a href="signup.html">Sign up</a></p>
-        <p><a href="">Forgot the password?</a></p>
-
+        <p >Don’t have an account? <a href="signup.html">/signup</a></p>
     </form>
 </div>
 

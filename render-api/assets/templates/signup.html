@@ -12,22 +12,25 @@
 <body>
 <div class="main">
     <h2>CityGO</h2>
-    <form>
+    <form method="POST" action="/registration">
+        <div class="mb-3 text-input">
+            <label for="exampleInputUsername" class="form-label">Username</label>
+            <input placeholder="Username" type="text" class="form-control" id="exampleInputUsername" name="username">
+        </div>
         <div class="mb-3 text-input">
             <label for="exampleInputEmail1" class="form-label">Email</label>
-            <input placeholder="Email" type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+            <input placeholder="Email" type="email" class="form-control" id="exampleInputEmail1" name="email" aria-describedby="emailHelp">
+        </div>
+        <div class="mb-3 text-input">
+            <label for="exampleInputTelegram" class="form-label">Telegram</label>
+            <input placeholder="Telegram" type="text" class="form-control" id="exampleInputTelegram" name="telegram">
         </div>
         <div class="mb-3 text-input">
             <label for="exampleInputPassword1" class="form-label">Password</label>
-            <input placeholder="Password" type="password" class="form-control" id="exampleInputPassword1">
+            <input placeholder="Password" type="password" class="form-control" id="exampleInputPassword1" name="password">
         </div>
-        <div class="mb-3 text-input">
-            <label for="exampleInputRepPassword1" class="form-label">Repeat Password</label>
-            <input placeholder="Repeat Password*" type="password" class="form-control" id="exampleInputRepPassword1">
-        </div>
-        <a href="signup2.html"><button type="submit" class="btn btn-primary mt-4 mb-4">Sign Up</button></a>
-        <p >Already have an account? <a href="signin.html">Sign In</a></p>
-
+        <button type="submit" class="btn btn-primary mt-4 mb-4">Sign Up</button></a>
+        <p >Already have an account? <a href="/signin">Sign In</a></p>
     </form>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>

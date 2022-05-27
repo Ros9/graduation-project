@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
@@ -9,13 +10,20 @@ import (
 	"net/http"
 )
 
+var (
+	httpClt  *http.Client
+	sessions map[string]*model.User
+)
+
 func main() {
 	router := gin.Default()
 
 	router.LoadHTMLGlob("assets/templates/*")
 	router.Static("/assets", "./assets")
 
-	httpClt := http.DefaultClient
+	sessions = make(map[string]*model.User)
+
+	httpClt = http.DefaultClient
 
 	router.Handle("GET", "/signup", func(context *gin.Context) {
 		context.HTML(200, "signup.html", nil)
@@ -30,39 +38,43 @@ func main() {
 	})
 
 	router.Handle("GET", "/index", func(context *gin.Context) {
-		url := "http://localhost:8080/challenges"
-		req, _ := http.NewRequest("GET", url, nil)
-		resp, err := httpClt.Do(req)
-		if err != nil {
-			fmt.Println("error when do request:", url, " =", err.Error())
-			return
-		}
-		data, err := ioutil.ReadAll(resp.Body)
-		fmt.Println("data from", url, " =", string(data))
-		if err != nil {
-			fmt.Println("error =", err.Error())
-			return
-		}
-		challenges := []*model.Challenge{}
-		err = json.Unmarshal(data, &challenges)
-		for _, challenge := range challenges {
-			fmt.Println("1")
-			fmt.Println("challenge =", challenge)
-		}
-		if err != nil {
-			fmt.Println("error =", err.Error())
-			return
-		}
+		challenges := GetChallenges()
 		fmt.Println("challenges =", challenges)
-		context.HTML(200, "index.html", nil)
+		context.HTML(200, "index.html", challenges)
 	})
 
 	router.Handle("GET", "/challenges", func(context *gin.Context) {
-		context.HTML(200, "quests.html", nil)
+		token, err := context.Cookie("token")
+		if err != nil {
+			return
+		}
+		_, ok := sessions[token]
+		isOnline := false
+		if !ok {
+			fmt.Println("user has not exist")
+		} else {
+			isOnline = true
+		}
+		challenges := GetChallenges()
+		fmt.Println("challenges =", challenges)
+		companies := GetCompanies()
+		data := map[string]interface{}{
+			"challenges": challenges,
+			"companies":  companies,
+			"isOnline":   isOnline,
+		}
+		context.HTML(200, "quests.html", data)
 	})
 
-	router.Handle("GET", "/challenges/something", func(context *gin.Context) {
-		context.HTML(200, "detail-quest.html", nil)
+	router.Handle("GET", "/challenge/:id", func(context *gin.Context) {
+		challengeId := context.Param("id")
+		challenge := GetChallengeById(challengeId)
+		company := GetCompanyById(challenge.CompanyID)
+		data := map[string]interface{}{
+			"challenge": challenge,
+			"company":   company,
+		}
+		context.HTML(200, "detail-quest.html", data)
 	})
 
 	router.Handle("GET", "/profile", func(context *gin.Context) {
@@ -73,5 +85,220 @@ func main() {
 		context.HTML(200, "achievements.html", nil)
 	})
 
+	router.Handle("POST", "/registration", func(context *gin.Context) {
+		username := context.Request.FormValue("username")
+		email := context.Request.FormValue("email")
+		telegram := context.Request.FormValue("telegram")
+		password := context.Request.FormValue("password")
+		user := model.User{
+			Username: username,
+			Password: password,
+			Email:    email,
+			Telegram: telegram,
+			IsAdmin:  0,
+		}
+		fmt.Println("password =", password)
+		createdUser, err := RegisterUser(user)
+		if err != nil {
+			fmt.Println("error =", err.Error())
+		}
+		fmt.Println("user =", createdUser)
+		context.Redirect(301, "/signin")
+	})
+
+	router.Handle("POST", "/login", func(context *gin.Context) {
+		username := context.Request.FormValue("username")
+		password := context.Request.FormValue("password")
+		authInfo := model.AuthInfo{
+			Username: username,
+			Password: password,
+		}
+		tokenStr, err := GetToken(authInfo)
+		if err != nil {
+			fmt.Println("error =", err.Error())
+			return
+		}
+		fmt.Println("tokenStr =", tokenStr)
+		user, err := GetUserByToken(tokenStr)
+		if err != nil {
+			fmt.Println("error =", err.Error())
+			return
+		}
+		context.SetCookie("token", tokenStr, 600, "/", "", true, true)
+		sessions[tokenStr] = user
+		fmt.Println("user =", user)
+		context.Redirect(301, "/index")
+	})
+
 	router.Run(":5000")
+}
+
+func RegisterUser(user model.User) (*model.User, error) {
+	url := "http://localhost:8080/user/registration"
+	data, err := json.Marshal(user)
+	if err != nil {
+		return nil, err
+	}
+	req, _ := http.NewRequest("POST", url, bytes.NewBuffer(data))
+	resp, err := httpClt.Do(req)
+	createdUser := model.User{}
+	if err != nil {
+		fmt.Println("error when do request:", url, " =", err.Error())
+		return nil, err
+	}
+	data, err = ioutil.ReadAll(resp.Body)
+	fmt.Println("data from", url, " =", string(data))
+	if err != nil {
+		fmt.Println("error =", err.Error())
+		return nil, err
+	}
+	err = json.Unmarshal(data, &createdUser)
+	if err != nil {
+		fmt.Println("error =", err.Error())
+		return nil, err
+	}
+	return &createdUser, nil
+}
+
+func GetUserByToken(tokenStr string) (*model.User, error) {
+	url := "http://localhost:8080/user/info"
+	req, _ := http.NewRequest("GET", url, nil)
+	req.Header.Set("Authorization", "Bearer "+tokenStr)
+	resp, err := httpClt.Do(req)
+	if err != nil {
+		fmt.Println("error when do request:", url, " =", err.Error())
+		return nil, err
+	}
+	data, err := ioutil.ReadAll(resp.Body)
+	fmt.Println("data from", url, " =", string(data))
+	if err != nil {
+		fmt.Println("error =", err.Error())
+		return nil, err
+	}
+	user := model.User{}
+	err = json.Unmarshal(data, &user)
+	if err != nil {
+		fmt.Println("error =", err.Error())
+		return nil, err
+	}
+	return &user, nil
+}
+
+func GetToken(authInfo model.AuthInfo) (string, error) {
+	url := "http://localhost:8080/auth/user"
+	data, err := json.Marshal(authInfo)
+	if err != nil {
+		return "", err
+	}
+	req, _ := http.NewRequest("POST", url, bytes.NewBuffer(data))
+	resp, err := httpClt.Do(req)
+	if err != nil {
+		fmt.Println("error when do request:", url, " =", err.Error())
+		return "", err
+	}
+	data, err = ioutil.ReadAll(resp.Body)
+	fmt.Println("data from", url, " =", string(data))
+	if err != nil {
+		fmt.Println("error =", err.Error())
+		return "", err
+	}
+	tokenStr := ""
+	err = json.Unmarshal(data, &tokenStr)
+	if err != nil {
+		fmt.Println("error =", err.Error())
+		return "", err
+	}
+	return tokenStr, nil
+}
+
+func GetChallengeById(challengeId string) model.Challenge {
+	url := "http://localhost:8080/challenge/" + challengeId
+	req, _ := http.NewRequest("GET", url, nil)
+	resp, err := httpClt.Do(req)
+	challenge := model.Challenge{}
+	if err != nil {
+		fmt.Println("error when do request:", url, " =", err.Error())
+		return challenge
+	}
+	data, err := ioutil.ReadAll(resp.Body)
+	fmt.Println("data from", url, " =", string(data))
+	if err != nil {
+		fmt.Println("error =", err.Error())
+		return challenge
+	}
+	err = json.Unmarshal(data, &challenge)
+	if err != nil {
+		fmt.Println("error =", err.Error())
+		return challenge
+	}
+	return challenge
+}
+
+func GetChallenges() []*model.Challenge {
+	url := "http://localhost:8080/challenges"
+	req, _ := http.NewRequest("GET", url, nil)
+	resp, err := httpClt.Do(req)
+	challenges := []*model.Challenge{}
+	if err != nil {
+		fmt.Println("error when do request:", url, " =", err.Error())
+		return challenges
+	}
+	data, err := ioutil.ReadAll(resp.Body)
+	fmt.Println("data from", url, " =", string(data))
+	if err != nil {
+		fmt.Println("error =", err.Error())
+		return challenges
+	}
+	err = json.Unmarshal(data, &challenges)
+	if err != nil {
+		fmt.Println("error =", err.Error())
+		return challenges
+	}
+	return challenges
+}
+
+func GetCompanies() []*model.Company {
+	url := "http://localhost:8080/companies"
+	req, _ := http.NewRequest("GET", url, nil)
+	resp, err := httpClt.Do(req)
+	companies := []*model.Company{}
+	if err != nil {
+		fmt.Println("error when do request:", url, " =", err.Error())
+		return companies
+	}
+	data, err := ioutil.ReadAll(resp.Body)
+	fmt.Println("data from", url, " =", string(data))
+	if err != nil {
+		fmt.Println("error =", err.Error())
+		return companies
+	}
+	err = json.Unmarshal(data, &companies)
+	if err != nil {
+		fmt.Println("error =", err.Error())
+		return companies
+	}
+	return companies
+}
+
+func GetCompanyById(companyId string) model.Company {
+	url := "http://localhost:8080/company/" + companyId
+	req, _ := http.NewRequest("GET", url, nil)
+	resp, err := httpClt.Do(req)
+	company := model.Company{}
+	if err != nil {
+		fmt.Println("error when do request:", url, " =", err.Error())
+		return company
+	}
+	data, err := ioutil.ReadAll(resp.Body)
+	fmt.Println("data from", url, " =", string(data))
+	if err != nil {
+		fmt.Println("error =", err.Error())
+		return company
+	}
+	err = json.Unmarshal(data, &company)
+	if err != nil {
+		fmt.Println("error =", err.Error())
+		return company
+	}
+	return company
 }
