@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"graduation-project/challenge-api/model"
+	"graduation-project/render-api/model"
 	"io/ioutil"
 	"net/http"
 )

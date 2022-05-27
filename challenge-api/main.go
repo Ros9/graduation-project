@@ -55,7 +55,6 @@ func main() {
 	authController := controller.NewAuthController(userService)
 
 	router.Handle("POST", "/auth/user", authController.GetUserToken())
-	router.Handle("POST", "/auth/company", authController.GetUserToken())
 
 	router.Handle("POST", "/user/registration", userController.CreateUser())
 	router.Handle("GET", "/user/info", userController.GetUserInfo())
@@ -67,7 +66,7 @@ func main() {
 
 	router.Handle("POST", "/company", companyController.CreateCompany())
 	router.Handle("GET", "/company/:id", companyController.GetCompany())
-	router.Handle("GET", "/company", companyController.GetCompanies())
+	router.Handle("GET", "/companies", companyController.GetCompanies())
 	router.Handle("PUT", "/company/:id", companyController.UpdateCompany())
 	router.Handle("DELETE", "/company/:id", companyController.DeleteCompany())
 

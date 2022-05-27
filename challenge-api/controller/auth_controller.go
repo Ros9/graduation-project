@@ -32,7 +32,7 @@ func (ac *authController) GetUserToken() gin.HandlerFunc {
 		if err != nil {
 			context.JSON(404, err.Error())
 		}
-		token, err := ac.userService.GetTokenForUser(userAuth.Login, userAuth.Password)
+		token, err := ac.userService.GetTokenForUser(userAuth.Username, userAuth.Password)
 		if err != nil {
 			context.JSON(400, "incorrect login or password")
 		}

@@ -56,7 +56,11 @@ func (cc *companyController) GetCompany() gin.HandlerFunc {
 
 func (cc *companyController) GetCompanies() gin.HandlerFunc {
 	return func(context *gin.Context) {
-
+		companies, err := cc.companyService.GetCompanies()
+		if err != nil {
+			context.JSON(500, err.Error())
+		}
+		context.JSON(200, companies)
 	}
 }
 

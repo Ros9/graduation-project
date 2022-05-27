@@ -40,17 +40,31 @@ func (cs *companyService) GetCompany(companyID string) (*model.Company, error) {
 	if err != nil {
 		return nil, err
 	}
-	challengeExternalId := "company_" + company.ID
-	attachment, err := cs.attachmentService.GetAttachmentByExternalId(challengeExternalId)
+	companyExternalId := "company_" + company.ID
+	attachment, err := cs.attachmentService.GetAttachmentByExternalId(companyExternalId)
 	if err != nil {
 		fmt.Println("error when get challenge =", err.Error())
 	}
 	if attachment != nil {
-		company.ImageUrl = "/assets/image/" + challengeExternalId
+		company.ImageUrl = "/assets/image/" + companyExternalId
 	}
 	return company, nil
 }
 
 func (cs *companyService) GetCompanies() ([]*model.Company, error) {
-	return []*model.Company{}, nil
+	companies, err := cs.companyRepository.FindCompanies()
+	if err != nil {
+		return nil, err
+	}
+	for _, company := range companies {
+		companyExternalId := "company_" + company.ID
+		attachment, err := cs.attachmentService.GetAttachmentByExternalId(companyExternalId)
+		if err != nil {
+			fmt.Println("error when get challenge =", err.Error())
+		}
+		if attachment != nil {
+			company.ImageUrl = "/assets/image/" + companyExternalId
+		}
+	}
+	return companies, nil
 }

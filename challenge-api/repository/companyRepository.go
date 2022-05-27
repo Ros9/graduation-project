@@ -2,6 +2,7 @@ package repository
 
 import (
 	"database/sql"
+	"fmt"
 	"github.com/prometheus/common/log"
 	"graduation-project/challenge-api/model"
 )
@@ -9,6 +10,7 @@ import (
 type CompanyRepository interface {
 	CreateCompany(company *model.Company) (*model.Company, error)
 	FindCompanyById(companyId string) (*model.Company, error)
+	FindCompanies() ([]*model.Company, error)
 }
 
 type companyRepository struct {
@@ -50,4 +52,23 @@ func (cr *companyRepository) FindCompanyById(companyId string) (*model.Company, 
 		return nil, err
 	}
 	return company, nil
+}
+
+func (cr *companyRepository) FindCompanies() ([]*model.Company, error) {
+	q := "select * from companies"
+	rows, err := cr.db.Query(q)
+	if err != nil {
+		fmt.Println("error =", err.Error())
+	}
+	companies := []*model.Company{}
+	for rows.Next() {
+		company := &model.Company{}
+		err := rows.Scan(&company.ID, &company.Name, &company.Description, &company.Email)
+		if err != nil {
+			fmt.Println("error =", err.Error())
+			return nil, err
+		}
+		companies = append(companies, company)
+	}
+	return companies, nil
 }
