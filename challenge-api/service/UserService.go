@@ -63,7 +63,6 @@ func (cs *userService) GetUser(userID string) (*model.User, error) {
 		if attachment != nil {
 			challenge.ImageUrl = "/assets/image/" + challengeExternalId
 		}
-		fmt.Println("attachment = ", *attachment)
 	}
 	user.Challenges = append(user.Challenges, ucs...)
 	return user, nil
