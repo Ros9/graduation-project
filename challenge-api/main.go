@@ -32,6 +32,7 @@ func main() {
 	tagRepository := repository.NewTagRepository(dbConnection)
 	achievementRepository := repository.NewAchievementRepository(dbConnection)
 	bonusRepository := repository.NewBonusRepository(dbConnection)
+	achievementTagRepository := repository.NewAchievementTagRepository(dbConnection)
 
 	attachmentService := service.NewAttachmentService(attachmentRepository)
 	companyService := service.NewCompanyService(companyRepository, attachmentService)
@@ -42,6 +43,7 @@ func main() {
 	tagService := service.NewTagService(tagRepository)
 	achievementService := service.NewAchievementService(achievementRepository)
 	bonusService := service.NewBonusService(bonusRepository)
+	achievementTagService := service.NewAchievementTagService(achievementTagRepository)
 
 	userController := controller.NewUserController(userService)
 	companyController := controller.NewCompanyController(companyService)
@@ -53,6 +55,7 @@ func main() {
 	achievementController := controller.NewAchievementController(achievementService)
 	bonusController := controller.NewBonusController(bonusService)
 	authController := controller.NewAuthController(userService)
+	achievementTagController := controller.NewAchievementTagController(achievementTagService)
 
 	router.Handle("POST", "/auth/user", authController.GetUserToken())
 
@@ -112,6 +115,9 @@ func main() {
 	router.Handle("GET", "/bonus", bonusController.GetBonuses())
 	router.Handle("PUT", "/bonus/:id", bonusController.UpdateBonus())
 	router.Handle("DELETE", "/bonus/:id", bonusController.DeleteBonus())
+
+	router.POST("/achievement-tag", achievementTagController.CreateAchievementTag())
+	router.GET("/tags-by-achievement", achievementTagController.GetTagsIdsByAchievementId())
 
 	router.GET("/health-check", func(context *gin.Context) {
 		context.JSON(200, "I am ok!")
