@@ -33,15 +33,21 @@ func main() {
 	achievementRepository := repository.NewAchievementRepository(dbConnection)
 	bonusRepository := repository.NewBonusRepository(dbConnection)
 	achievementTagRepository := repository.NewAchievementTagRepository(dbConnection)
+	challengeTagRepository := repository.NewChallengeTagRepository(dbConnection)
+	userTagRepository := repository.NewUserTagRepository(dbConnection)
+	userAchievementRepository := repository.NewUserAchievementRepository(dbConnection)
 
 	attachmentService := service.NewAttachmentService(attachmentRepository)
 	companyService := service.NewCompanyService(companyRepository, attachmentService)
-	userService := service.NewUserService(userRepository, challengeRepository, attachmentService)
-	challengeService := service.NewChallengeService(challengeRepository, attachmentService)
-	answerService := service.NewAnswerService(answerRepository, challengeRepository)
+	userService := service.NewUserService(userRepository, challengeRepository, attachmentService,
+		userAchievementRepository, achievementRepository)
+	challengeService := service.NewChallengeService(challengeRepository, attachmentService,
+		challengeTagRepository, tagRepository)
+	answerService := service.NewAnswerService(answerRepository, challengeRepository, challengeTagRepository, achievementRepository,
+		userTagRepository, achievementTagRepository, userAchievementRepository)
 	commentService := service.NewCommentService(commentRepository)
 	tagService := service.NewTagService(tagRepository)
-	achievementService := service.NewAchievementService(achievementRepository)
+	achievementService := service.NewAchievementService(achievementRepository, achievementTagRepository, tagRepository)
 	bonusService := service.NewBonusService(bonusRepository)
 	achievementTagService := service.NewAchievementTagService(achievementTagRepository)
 

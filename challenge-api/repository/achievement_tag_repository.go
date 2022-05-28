@@ -32,17 +32,17 @@ func NewAchievementTagRepository(db *sql.DB) AchievementTagRepository {
 	return &achievementTagRepository{db}
 }
 
-func (ar *achievementTagRepository) CreateAchievementTag(achievementTag *model.AchievementTag) (*model.AchievementTag, error) {
-	row := ar.db.QueryRow("insert into achievement_tag (achievement_id, tag_id) "+
-		"values ($1, $2, $3)", &achievementTag.AchievementId, &achievementTag.TagId)
+func (at *achievementTagRepository) CreateAchievementTag(achievementTag *model.AchievementTag) (*model.AchievementTag, error) {
+	row := at.db.QueryRow("insert into achievement_tag (achievement_id, tag_id) "+
+		"values ($1, $2)", &achievementTag.AchievementId, &achievementTag.TagId)
 	if row.Err() != nil {
 		return nil, row.Err()
 	}
 	return achievementTag, nil
 }
 
-func (ar *achievementTagRepository) FindTagsIdsByAchievementId(achievementId string) ([]*model.AchievementTag, error) {
-	rows, err := ar.db.Query("select * from achievement_tag where achievement_id = $1", &achievementId)
+func (at *achievementTagRepository) FindTagsIdsByAchievementId(achievementId string) ([]*model.AchievementTag, error) {
+	rows, err := at.db.Query("select * from achievement_tag where achievement_id = $1", &achievementId)
 	if err != nil {
 		return nil, err
 	}

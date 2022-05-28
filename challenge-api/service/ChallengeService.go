@@ -18,13 +18,21 @@ type ChallengeService interface {
 }
 
 type challengeService struct {
-	challengeRepository repository.ChallengeRepository
-	attachmentService   AttachmentService
+	challengeRepository    repository.ChallengeRepository
+	attachmentService      AttachmentService
+	challengeTagRepository repository.ChallengeTagRepository
+	tagRepository          repository.TagRepository
 }
 
 func NewChallengeService(challengeRepository repository.ChallengeRepository,
-	attachmentService AttachmentService) ChallengeService {
-	return &challengeService{challengeRepository, attachmentService}
+	attachmentService AttachmentService, challengeTagRepository repository.ChallengeTagRepository,
+	tagRepository repository.TagRepository) ChallengeService {
+	return &challengeService{
+		challengeRepository,
+		attachmentService,
+		challengeTagRepository,
+		tagRepository,
+	}
 }
 
 func (cs *challengeService) CreateChallenge(challenge *model.Challenge) (*model.Challenge, error) {
@@ -36,6 +44,21 @@ func (cs *challengeService) CreateChallenge(challenge *model.Challenge) (*model.
 	createdChallenge, err := cs.challengeRepository.CreateChallenge(challenge)
 	if err != nil {
 		return nil, err
+	}
+	for _, tagId := range challenge.TagsIds {
+		tag, err := cs.tagRepository.FindTagById(tagId)
+		if err != nil {
+			fmt.Println("error =", err.Error())
+			continue
+		}
+		challengeTag := &model.ChallengeTag{
+			ChallengeId: challenge.ID,
+			TagId:       tag.ID,
+		}
+		_, err = cs.challengeTagRepository.CreateChallengeTag(challengeTag)
+		if err != nil {
+			fmt.Println("error =", err.Error())
+		}
 	}
 	return createdChallenge, nil
 }

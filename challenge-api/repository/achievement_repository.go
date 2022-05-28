@@ -2,6 +2,7 @@ package repository
 
 import (
 	"database/sql"
+	"fmt"
 	"github.com/prometheus/common/log"
 	"graduation-project/challenge-api/model"
 )
@@ -9,6 +10,7 @@ import (
 type AchievementRepository interface {
 	CreateAchievement(achievement *model.Achievement) (*model.Achievement, error)
 	FindAchievementById(achievementId string) (*model.Achievement, error)
+	FindAchievements() ([]*model.Achievement, error)
 }
 
 type achievementRepository struct {
@@ -49,4 +51,22 @@ func (ar *achievementRepository) FindAchievementById(achievementId string) (*mod
 		return nil, err
 	}
 	return achievement, nil
+}
+
+func (at *achievementRepository) FindAchievements() ([]*model.Achievement, error) {
+	rows, err := at.db.Query("select * from achievements")
+	if err != nil {
+		return nil, err
+	}
+	achievements := []*model.Achievement{}
+	for rows.Next() {
+		achievement := &model.Achievement{}
+		err := rows.Scan(&achievement.ID, &achievement.Title, &achievement.Description)
+		if err != nil {
+			fmt.Println("error =", err.Error())
+			return nil, err
+		}
+		achievements = append(achievements, achievement)
+	}
+	return achievements, nil
 }

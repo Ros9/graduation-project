@@ -19,18 +19,22 @@ type UserService interface {
 }
 
 type userService struct {
-	userRepository      repository.UserRepository
-	challengeRepository repository.ChallengeRepository
-	attachmentService   AttachmentService
+	userRepository            repository.UserRepository
+	challengeRepository       repository.ChallengeRepository
+	attachmentService         AttachmentService
+	userAchievementRepository repository.UserAchievementRepository
+	achievementRepository     repository.AchievementRepository
 }
 
-func NewUserService(userRepository repository.UserRepository,
-	challengeRepository repository.ChallengeRepository,
-	attachmentService AttachmentService) UserService {
+func NewUserService(userRepository repository.UserRepository, challengeRepository repository.ChallengeRepository,
+	attachmentService AttachmentService, userAchievementRepository repository.UserAchievementRepository,
+	achievementRepository repository.AchievementRepository) UserService {
 	return &userService{
 		userRepository,
 		challengeRepository,
 		attachmentService,
+		userAchievementRepository,
+		achievementRepository,
 	}
 }
 
@@ -65,6 +69,19 @@ func (cs *userService) GetUser(userID string) (*model.User, error) {
 		}
 	}
 	user.Challenges = append(user.Challenges, ucs...)
+	uas, err := cs.userAchievementRepository.FindAchievementIdsByUserId(user.ID)
+	if err != nil {
+		fmt.Println("error =", err.Error())
+		return nil, err
+	}
+	for _, userAchievement := range uas {
+		achievement, err := cs.achievementRepository.FindAchievementById(userAchievement.AchievementId)
+		if err != nil {
+			fmt.Println("error =", err.Error())
+			return nil, err
+		}
+		user.Achievements = append(user.Achievements, achievement)
+	}
 	return user, nil
 }
 
