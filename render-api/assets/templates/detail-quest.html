@@ -12,12 +12,12 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <link rel="stylesheet" href="/assets/styles/all.css">
     <link rel="stylesheet" href="/assets/styles/detail-quest.css">
-    <title>CityGo</title>
+    <title>Challenge</title>
 </head>
 <body>
 <nav class="container navbar navbar-expand-lg navbar-light bg-light">
     <div class="container-fluid">
-        <a class="logo" href="#">CityGO</a>
+        <a class="logo" href="/index " style="text-decoration:none"CityGO</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -67,8 +67,9 @@
             <p>{{$challenge.Description}}</p>
         </div>
         <div class="input-sec mt-5">
-            <form action="/pepega">
-                <input type="text" placeholder="Напишите свой ответ...">
+            <form method="POST" action="/answer">
+                <input type="text" placeholder="Напишите свой ответ..." name="answer">
+                <input type="text" name="challenge_id" value="{{$challenge.ID}}" hidden>
                 <input type="submit" hidden>
             </form>
         </div>
@@ -115,10 +116,10 @@
         <div class="f-body">
             <div class="list">
                 <ul>
-                    <li><a href="">Main</a></li>
-                    <li><a href="">Quests</a></li>
-                    <li><a href="">Your progression</a></li>
-                    <li><a href="">Achievments</a></li>
+                    <li><a href="/index">Main</a></li>
+                    <li><a href="/challenges">Quests</a></li>
+                    <li><a href="/profile">Your progression</a></li>
+                    <li><a href="/achievements">Achievements</a></li>
                 </ul>
             </div>
             <div class="copy">

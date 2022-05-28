@@ -46,7 +46,7 @@ func main() {
 	router.Handle("GET", "/challenges", func(context *gin.Context) {
 		token, err := context.Cookie("token")
 		if err != nil {
-			return
+			fmt.Println("error =", err.Error())
 		}
 		_, ok := sessions[token]
 		isOnline := false
@@ -67,18 +67,51 @@ func main() {
 	})
 
 	router.Handle("GET", "/challenge/:id", func(context *gin.Context) {
+		token, err := context.Cookie("token")
+		if err != nil {
+			fmt.Println("error =", err.Error())
+		}
+		user, ok := sessions[token]
+		isOnline := false
+		if !ok {
+			fmt.Println("user has not exist")
+		} else {
+			isOnline = true
+		}
 		challengeId := context.Param("id")
 		challenge := GetChallengeById(challengeId)
 		company := GetCompanyById(challenge.CompanyID)
 		data := map[string]interface{}{
 			"challenge": challenge,
 			"company":   company,
+			"user":      user,
+			"isOnline":  isOnline,
 		}
 		context.HTML(200, "detail-quest.html", data)
 	})
 
-	router.Handle("GET", "/profile", func(context *gin.Context) {
-		context.HTML(200, "your-progression.html", nil)
+	router.GET("/profile2", func(context *gin.Context) {
+		token, err := context.Cookie("token")
+		if err != nil {
+			fmt.Println("error =", err.Error())
+		}
+		user, ok := sessions[token]
+		isOnline := false
+		if !ok {
+			fmt.Println("user has not exist")
+			context.Redirect(307, "/signin")
+		} else {
+			isOnline = true
+		}
+		challenges := GetChallengesByUserId(user.ID)
+		fmt.Println("number of number_of_answers =", len(challenges))
+		data := map[string]interface{}{
+			"user":              user,
+			"number_of_answers": len(challenges),
+			"challenges":        challenges,
+			"is_online":         isOnline,
+		}
+		context.HTML(200, "your-progression.html", data)
 	})
 
 	router.Handle("GET", "/achievements", func(context *gin.Context) {
@@ -128,6 +161,36 @@ func main() {
 		sessions[tokenStr] = user
 		fmt.Println("user =", user)
 		context.Redirect(301, "/index")
+	})
+
+	router.POST("/answer", func(context *gin.Context) {
+		token, err := context.Cookie("token")
+		if err != nil {
+			fmt.Println("error =", err.Error())
+		}
+		user, ok := sessions[token]
+		isOnline := false
+		if !ok {
+			fmt.Println("user has not exist")
+		} else {
+			isOnline = true
+		}
+		fmt.Println(user, isOnline)
+		if !isOnline {
+			context.Redirect(301, "/signin")
+			return
+		}
+		answerStr := context.Request.FormValue("answer")
+		challengeId := context.Request.FormValue("challenge_id")
+		fmt.Println("challengeId =", challengeId)
+		answer := model.Answer{
+			UserID:      user.ID,
+			ChallengeID: challengeId,
+			Answer:      answerStr,
+			Status:      1,
+		}
+		GiveAnswer(token, answer)
+		context.Redirect(301, "/challenge/"+challengeId)
 	})
 
 	router.Run(":5000")
@@ -257,6 +320,29 @@ func GetChallenges() []*model.Challenge {
 	return challenges
 }
 
+func GetChallengesByUserId(userId string) []*model.Challenge {
+	url := "http://localhost:8080/challenges/user/" + userId
+	req, _ := http.NewRequest("GET", url, nil)
+	resp, err := httpClt.Do(req)
+	challenges := []*model.Challenge{}
+	if err != nil {
+		fmt.Println("error when do request:", url, " =", err.Error())
+		return challenges
+	}
+	data, err := ioutil.ReadAll(resp.Body)
+	fmt.Println("data from", url, " =", string(data))
+	if err != nil {
+		fmt.Println("error =", err.Error())
+		return challenges
+	}
+	err = json.Unmarshal(data, &challenges)
+	if err != nil {
+		fmt.Println("error =", err.Error())
+		return challenges
+	}
+	return challenges
+}
+
 func GetCompanies() []*model.Company {
 	url := "http://localhost:8080/companies"
 	req, _ := http.NewRequest("GET", url, nil)
@@ -301,4 +387,30 @@ func GetCompanyById(companyId string) model.Company {
 		return company
 	}
 	return company
+}
+
+func GiveAnswer(tokenStr string, answer model.Answer) (*model.Answer, error) {
+	url := "http://localhost:8080/answer"
+	data, err := json.Marshal(answer)
+	req, _ := http.NewRequest("POST", url, bytes.NewBuffer(data))
+	req.Header.Set("Authorization", "Bearer "+tokenStr)
+	resp, err := httpClt.Do(req)
+	if err != nil {
+		fmt.Println("error when do request:", url, " =", err.Error())
+		return nil, err
+	}
+	data, err = ioutil.ReadAll(resp.Body)
+	fmt.Println("data from", url, " =", string(data))
+	if err != nil {
+		fmt.Println("error =", err.Error())
+		return nil, err
+	}
+	return nil, nil
+	//user := model.User{}
+	//err = json.Unmarshal(data, &user)
+	//if err != nil {
+	//	fmt.Println("error =", err.Error())
+	//	return nil, err
+	//}
+	//return &user, nil
 }
