@@ -93,7 +93,6 @@ func (cs *achievementService) GetAchievements() ([]*model.Achievement, error) {
 		attachment, err := cs.attachmentService.GetAttachmentByExternalId(achievementExternalId)
 		if err != nil {
 			fmt.Println("error =", err.Error())
-			return nil, err
 		}
 		if attachment != nil {
 			achievement.ImageUrl = "/assets/image/" + achievementExternalId

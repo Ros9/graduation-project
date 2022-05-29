@@ -2,6 +2,7 @@ package repository
 
 import (
 	"database/sql"
+	"fmt"
 	"github.com/prometheus/common/log"
 	"graduation-project/challenge-api/model"
 )
@@ -9,6 +10,7 @@ import (
 type CommentRepository interface {
 	CreateComment(comment *model.Comment) (*model.Comment, error)
 	FindCommentById(commentId string) (*model.Comment, error)
+	FindCommentsByChallengeId(challengeId string) ([]*model.Comment, error)
 }
 
 type commentRepository struct {
@@ -50,4 +52,23 @@ func (cr *commentRepository) FindCommentById(commentId string) (*model.Comment, 
 		return nil, err
 	}
 	return comment, nil
+}
+
+func (at *commentRepository) FindCommentsByChallengeId(challengeId string) ([]*model.Comment, error) {
+	rows, err := at.db.Query("select * from comments where challenge_id = $1", challengeId)
+	if err != nil {
+		fmt.Println("error =", err.Error())
+		return nil, err
+	}
+	comments := []*model.Comment{}
+	for rows.Next() {
+		comment := &model.Comment{}
+		err := rows.Scan(&comment.ID, &comment.ChallengeID, &comment.UserId, &comment.Description)
+		if err != nil {
+			fmt.Println("error =", err.Error())
+			return nil, err
+		}
+		comments = append(comments, comment)
+	}
+	return comments, nil
 }

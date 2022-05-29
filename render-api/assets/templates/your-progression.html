@@ -58,43 +58,38 @@
     <div class="info">
         <ul>
             <li>Количество ответов на квестах: <span style="color: #242357;">{{$number_of_answers}}</span></li>
-            <li>Количество отгаданных квестов: <span style="color: #242357;">2</span></li>
-            <li>Самый частый тип квестов: <span style="color: #242357;">Museum</span></li>
+            <li>Количество отгаданных квестов: <span style="color: #242357;">0</span></li>
         </ul>
     </div>
     <div class="contests">
-        <h2>Участвует:</h2>
+        <h2>Участие:</h2>
         {{range $challenge := $challenges}}
         <a href="/challenge/{{$challenge.ID}}" style="text-decoration:none">
             <div class="cart mt-4">
                 <h3>{{$challenge.Title}}</h3>
+                {{range $tag := $challenge.Tags}}
                 <div class="type">
-                    Museum
+                    {{$tag.Title}}
                 </div>
+                {{end}}
             </div>
         </a>
         {{end}}
     </div>
     <div class="received">
         <h2>Полученные ачивки:</h2>
+        {{range $achievement := $user.Achievements}}
         <div class="cart mt-4">
             <div class="pic-sec">
-                <img src="assets/image/eye.png" alt="">
+                <img src="{{$achievement.ImageUrl}}" alt="">
             </div>
             <p class="mx-xl-5">
-                <span style="font-weight: bolder; font-size: 1.2em">В первый раз?</span> <br> <br>
-                Зарегистрируйся на платформе
+                <span style="font-weight: bolder; font-size: 1.2em">{{$achievement.Title}}</span>
+                <br><br>
+                {{$achievement.Description}}
             </p>
         </div>
-        <div class="cart mt-4">
-            <div class="pic-sec">
-                <img src="assets/image/picture.png" alt="">
-            </div>
-            <p class="mx-xl-5">
-                <span style="font-weight: bolder; font-size: 1.2em">Любитель халявы</span> <br> <br>
-                Отправь свой ответ на квест
-            </p>
-        </div>
+        {{end}}
     </div>
 </div>
 <div class="footer">

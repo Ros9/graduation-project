@@ -78,7 +78,15 @@ func (cs *userService) GetUser(userID string) (*model.User, error) {
 		achievement, err := cs.achievementRepository.FindAchievementById(userAchievement.AchievementId)
 		if err != nil {
 			fmt.Println("error =", err.Error())
-			return nil, err
+			continue
+		}
+		achievementExternalId := "achievement_" + achievement.ID
+		attachment, err := cs.attachmentService.GetAttachmentByExternalId(achievementExternalId)
+		if err != nil {
+			fmt.Println(err.Error())
+		}
+		if attachment != nil {
+			achievement.ImageUrl = "/assets/image/" + achievementExternalId
 		}
 		user.Achievements = append(user.Achievements, achievement)
 	}

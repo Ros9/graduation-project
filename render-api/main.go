@@ -81,11 +81,17 @@ func main() {
 		challengeId := context.Param("id")
 		challenge := GetChallengeById(challengeId)
 		company := GetCompanyById(challenge.CompanyID)
+		comments, err := GetCommentsByChallengeId(challengeId)
+		if err != nil {
+			fmt.Println("error =", err.Error())
+		}
+		fmt.Println("comments =", comments)
 		data := map[string]interface{}{
 			"challenge": challenge,
 			"company":   company,
 			"user":      user,
 			"isOnline":  isOnline,
+			"comments":  comments,
 		}
 		context.HTML(200, "detail-quest.html", data)
 	})
@@ -114,8 +120,12 @@ func main() {
 		context.HTML(200, "your-progression.html", data)
 	})
 
-	router.Handle("GET", "/achievements", func(context *gin.Context) {
-		context.HTML(200, "achievements.html", nil)
+	router.GET("/achievements", func(context *gin.Context) {
+		achievements := GetAchievements()
+		data := map[string]interface{}{
+			"achievements": achievements,
+		}
+		context.HTML(200, "achievements.html", data)
 	})
 
 	router.Handle("POST", "/registration", func(context *gin.Context) {
@@ -182,7 +192,6 @@ func main() {
 		}
 		answerStr := context.Request.FormValue("answer")
 		challengeId := context.Request.FormValue("challenge_id")
-		fmt.Println("challengeId =", challengeId)
 		answer := model.Answer{
 			UserID:      user.ID,
 			ChallengeID: challengeId,
@@ -190,6 +199,34 @@ func main() {
 			Status:      1,
 		}
 		GiveAnswer(token, answer)
+		context.Redirect(301, "/challenge/"+challengeId)
+	})
+
+	router.POST("/comment", func(context *gin.Context) {
+		token, err := context.Cookie("token")
+		if err != nil {
+			fmt.Println("error =", err.Error())
+		}
+		user, ok := sessions[token]
+		isOnline := false
+		if !ok {
+			fmt.Println("user has not exist")
+		} else {
+			isOnline = true
+		}
+		if !isOnline {
+			context.Redirect(301, "/signin")
+			return
+		}
+		description := context.Request.FormValue("description")
+		challengeId := context.Request.FormValue("challenge_id")
+		fmt.Println("challengeId =", challengeId)
+		comment := model.Comment{
+			ChallengeID: challengeId,
+			UserId:      user.ID,
+			Description: description,
+		}
+		CreateComment(token, comment)
 		context.Redirect(301, "/challenge/"+challengeId)
 	})
 
@@ -413,4 +450,69 @@ func GiveAnswer(tokenStr string, answer model.Answer) (*model.Answer, error) {
 	//	return nil, err
 	//}
 	//return &user, nil
+}
+
+func GetAchievements() []*model.Achievement {
+	url := "http://localhost:8080/achievements"
+	req, _ := http.NewRequest("GET", url, nil)
+	resp, err := httpClt.Do(req)
+	achievements := []*model.Achievement{}
+	if err != nil {
+		fmt.Println("error when do request:", url, " =", err.Error())
+		return achievements
+	}
+	data, err := ioutil.ReadAll(resp.Body)
+	fmt.Println("data from", url, " =", string(data))
+	if err != nil {
+		fmt.Println("error =", err.Error())
+		return achievements
+	}
+	err = json.Unmarshal(data, &achievements)
+	if err != nil {
+		fmt.Println("error =", err.Error())
+		return achievements
+	}
+	return achievements
+}
+
+func CreateComment(tokenStr string, comment model.Comment) (*model.Comment, error) {
+	url := "http://localhost:8080/comment"
+	data, err := json.Marshal(comment)
+	req, _ := http.NewRequest("POST", url, bytes.NewBuffer(data))
+	req.Header.Set("Authorization", "Bearer "+tokenStr)
+	resp, err := httpClt.Do(req)
+	if err != nil {
+		fmt.Println("error when do request:", url, " =", err.Error())
+		return nil, err
+	}
+	data, err = ioutil.ReadAll(resp.Body)
+	fmt.Println("data from", url, " =", string(data))
+	if err != nil {
+		fmt.Println("error =", err.Error())
+		return nil, err
+	}
+	return nil, nil
+}
+
+func GetCommentsByChallengeId(challengeId string) ([]*model.Comment, error) {
+	url := "http://localhost:8080/comments/challenge/" + challengeId
+	req, _ := http.NewRequest("GET", url, nil)
+	resp, err := httpClt.Do(req)
+	comments := []*model.Comment{}
+	if err != nil {
+		fmt.Println("error when do request:", url, " =", err.Error())
+		return comments, err
+	}
+	data, err := ioutil.ReadAll(resp.Body)
+	fmt.Println("data from", url, " =", string(data))
+	if err != nil {
+		fmt.Println("error =", err.Error())
+		return comments, err
+	}
+	err = json.Unmarshal(data, &comments)
+	if err != nil {
+		fmt.Println("error =", err.Error())
+		return comments, err
+	}
+	return comments, nil
 }

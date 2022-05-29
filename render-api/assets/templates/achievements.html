@@ -43,69 +43,20 @@
     </div>
 </nav>
 <div class="main mt-5">
-    <div class="cart">
-        <div class="pic-sec">
-            <img src="assets/image/eye.png" alt="">
-        </div>
-        <p class="mx-xl-5">
-            <span style="font-weight: bolder; font-size: 1.2em">В первый раз?</span> <br> <br>
-            Зарегистрируйся на платформе
-        </p>
-    </div>
-    <div class="cart mt-4">
-        <div class="pic-sec">
-            <img src="assets/image/picture.png" alt="">
-        </div>
-        <p class="mx-xl-5">
-            <span style="font-weight: bolder; font-size: 1.2em">Любитель халявы</span> <br> <br>
-            Отправь свой ответ на квест
-        </p>
-    </div>
+    {{$achievements := .achievements}}
+    {{range $achievement := $achievements}}
     <div class="gray-cart mt-4">
         <div class="pic-sec">
-            <img src="assets/image/diamond.png" alt="">
+            <img src="{{$achievement.ImageUrl}}" alt="">
         </div>
         <p class="mx-xl-5">
-            <span style="font-weight: bolder; font-size: 1.2em">Любитель халявы</span> <br> <br>
-            Отправь свой ответ на квест
+            <span style="font-weight: bolder; font-size: 1.2em">{{$achievement.Title}}</span>
+            <br><br>
+            {{$achievement.Description}}
         </p>
     </div>
-    <div class="gray-cart mt-4">
-        <div class="pic-sec">
-            <img src="assets/image/_.png" alt="">
-        </div>
-        <p class="mx-xl-5">
-            <span style="font-weight: bolder; font-size: 1.2em">Ачивка которая непридумана</span> <br> <br>
-            Всем придумано, просто вы должны понять как её получить
-        </p>
-    </div>
-    <div class="gray-cart mt-4">
-        <div class="pic-sec">
-            <img src="assets/image/_.png" alt="">
-        </div>
-        <p class="mx-xl-5">
-            <span style="font-weight: bolder; font-size: 1.2em">Ачивка которая непридумана</span> <br> <br>
-            Всем придумано, просто вы должны понять как её получить
-        </p>
-    </div>
-    <div class="gray-cart mt-4">
-        <div class="pic-sec">
-            <img src="assets/image/_.png" alt="">
-        </div>
-        <p class="mx-xl-5">
-            <span style="font-weight: bolder; font-size: 1.2em">Ачивка которая непридумана</span> <br> <br>
-            Всем придумано, просто вы должны понять как её получить
-        </p>
-    </div>
-    <div class="gray-cart mt-4 mb-4">
-        <div class="pic-sec">
-            <img src="assets/image/_.png" alt="">
-        </div>
-        <p class="mx-xl-5">
-            <span style="font-weight: bolder; font-size: 1.2em">Ачивка которая непридумана</span> <br> <br>
-            Всем придумано, просто вы должны понять как её получить
-        </p>
-    </div>
+    <br>
+    {{end}}
 </div>
 <div class="footer">
     <div class="container">

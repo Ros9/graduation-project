@@ -56,6 +56,7 @@ func (ar *achievementRepository) FindAchievementById(achievementId string) (*mod
 func (at *achievementRepository) FindAchievements() ([]*model.Achievement, error) {
 	rows, err := at.db.Query("select * from achievements")
 	if err != nil {
+		fmt.Println("error =", err.Error())
 		return nil, err
 	}
 	achievements := []*model.Achievement{}

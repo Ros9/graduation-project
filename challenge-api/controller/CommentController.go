@@ -2,6 +2,7 @@ package controller
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"graduation-project/challenge-api/model"
 	"graduation-project/challenge-api/service"
@@ -14,6 +15,7 @@ type CommentController interface {
 	CreateComment() gin.HandlerFunc
 	GetComment() gin.HandlerFunc
 	GetComments() gin.HandlerFunc
+	GetCommentsByChallengeId() gin.HandlerFunc
 	UpdateComment() gin.HandlerFunc
 	DeleteComment() gin.HandlerFunc
 }
@@ -75,6 +77,18 @@ func (cc *commentController) GetComment() gin.HandlerFunc {
 func (cc *commentController) GetComments() gin.HandlerFunc {
 	return func(context *gin.Context) {
 
+	}
+}
+
+func (cc *commentController) GetCommentsByChallengeId() gin.HandlerFunc {
+	return func(context *gin.Context) {
+		challengeId := context.Param("challenge_id")
+		comments, err := cc.commentService.GetCommentsByChallengeId(challengeId)
+		if err != nil {
+			fmt.Println("error =", err.Error())
+			context.JSON(500, err.Error())
+		}
+		context.JSON(200, comments)
 	}
 }
 

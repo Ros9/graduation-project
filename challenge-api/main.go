@@ -45,7 +45,7 @@ func main() {
 		challengeTagRepository, tagRepository)
 	answerService := service.NewAnswerService(answerRepository, challengeRepository, challengeTagRepository, achievementRepository,
 		userTagRepository, achievementTagRepository, userAchievementRepository)
-	commentService := service.NewCommentService(commentRepository)
+	commentService := service.NewCommentService(commentRepository, userRepository)
 	tagService := service.NewTagService(tagRepository)
 	achievementService := service.NewAchievementService(achievementRepository, achievementTagRepository, tagRepository, attachmentService)
 	bonusService := service.NewBonusService(bonusRepository)
@@ -98,7 +98,8 @@ func main() {
 
 	router.Handle("POST", "/comment", commentController.CreateComment())
 	router.Handle("GET", "/comment/:id", commentController.GetComment())
-	router.Handle("GET", "/comment", commentController.GetComments())
+	router.Handle("GET", "/comments", commentController.GetComments())
+	router.Handle("GET", "/comments/challenge/:challenge_id", commentController.GetCommentsByChallengeId())
 	router.Handle("PUT", "/comment/:id", commentController.UpdateComment())
 	router.Handle("DELETE", "/comment/:id", commentController.DeleteComment())
 

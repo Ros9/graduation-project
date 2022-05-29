@@ -49,66 +49,6 @@
 </form>
 <div class="container">
     <div class="sec3">
-        <div class="glovo">
-            <div class="g-header">
-                <div class="g-info">
-                    <img src="assets/image/glovo.png" alt="">
-                    <h3>Glovo Kazakhstan</h3>
-                </div>
-                <div class="date">Until 5.05.22</div>
-            </div>
-            <div class="g-body">
-                <h3>Разгадай задачу <br>
-                    и получи бесплатную доставку!</h3>
-                <button>Museum</button>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                    sed do eiusmod tempor incididunt ut labore et dolore magna
-                    aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                    ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                    Duis aute irure dolor in reprehenderit
-                    in voluptate velit esse cillum dolore eu fugiat nulla pariatur...</p>
-            </div>
-        </div>
-        <div class="glovo mt-5">
-            <div class="d-header">
-                <div class="g-info">
-                    <img src="assets/image/dodo.png" alt="">
-                    <h3>DoDo Pizza</h3>
-                </div>
-                <div class="date">Until 7.06.22</div>
-            </div>
-            <div class="g-body">
-                <h3>Найди промокод <br>
-                    на бесплатный обед и ужин!</h3>
-                <button>Parks</button>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                    sed do eiusmod tempor incididunt ut labore et dolore magna
-                    aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                    ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                    Duis aute irure dolor in reprehenderit
-                    in voluptate velit esse cillum dolore eu fugiat nulla pariatur...</p>
-            </div>
-        </div>
-        <div class="glovo mt-5">
-            <div class="h-header">
-                <div class="g-info">
-                    <img src="assets/image/huawei.png" alt="">
-                    <h3>Huawei Kazakhstan</h3>
-                </div>
-                <div class="date">Until 7.06.22</div>
-            </div>
-            <div class="g-body">
-                <h3>Узнай главные секреты города и <br>стань одним из обладателей новой <br> Huawei Ki53</h3>
-                <button>Landmarks</button>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                    sed do eiusmod tempor incididunt ut labore et dolore magna
-                    aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                    ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                    Duis aute irure dolor in reprehenderit
-                    in voluptate velit esse cillum dolore eu fugiat nulla pariatur...</p>
-            </div>
-        </div>
-        <hr>
         <div>
             {{$isOnline := .isOnline}}
             {{$challenges := .challenges}}
@@ -128,9 +68,11 @@
                 </div>
                     <a href="/challenge/{{$challenge.ID}}" style="text-decoration:none">
                     <div class="g-body">
-                        <h3>Title {{$challenge.Title}}</h3>
-                        <button>Tag</button>
-                        <p>Description {{$challenge.Description}}</p>
+                        <h3>{{$challenge.Title}}</h3>
+                        {{range $tag := $challenge.Tags}}
+                        <button>{{$tag.Title}}</button>
+                        {{end}}
+                        <p>{{$challenge.Description}}</p>
                     </div>
                 </a>
             </div>

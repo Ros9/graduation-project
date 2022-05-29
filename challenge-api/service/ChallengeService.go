@@ -68,6 +68,18 @@ func (cs *challengeService) GetChallenge(challengeID string) (*model.Challenge, 
 	if err != nil {
 		return nil, err
 	}
+	cts, err := cs.challengeTagRepository.FindTagsIdsByChallengeId(challenge.ID)
+	if err != nil {
+		fmt.Println("error =", err.Error())
+	}
+	for _, challengeTag := range cts {
+		tag, err := cs.tagRepository.FindTagById(challengeTag.TagId)
+		if err != nil {
+			fmt.Println("error =", err.Error())
+			continue
+		}
+		challenge.Tags = append(challenge.Tags, *tag)
+	}
 	challengeExternalId := "challenge_" + challenge.ID
 	attachment, err := cs.attachmentService.GetAttachmentByExternalId(challengeExternalId)
 	if err != nil {
@@ -85,6 +97,18 @@ func (cs *challengeService) GetChallenges() ([]*model.Challenge, error) {
 		return nil, err
 	}
 	for _, challenge := range challenges {
+		cts, err := cs.challengeTagRepository.FindTagsIdsByChallengeId(challenge.ID)
+		if err != nil {
+			fmt.Println("error =", err.Error())
+		}
+		for _, challengeTag := range cts {
+			tag, err := cs.tagRepository.FindTagById(challengeTag.TagId)
+			if err != nil {
+				fmt.Println("error =", err.Error())
+				continue
+			}
+			challenge.Tags = append(challenge.Tags, *tag)
+		}
 		challengeExternalId := "challenge_" + challenge.ID
 		attachment, err := cs.attachmentService.GetAttachmentByExternalId(challengeExternalId)
 		if err != nil {
@@ -116,6 +140,18 @@ func (cs *challengeService) GetChallengesByUserId(userId string) ([]*model.Chall
 		return nil, err
 	}
 	for _, challenge := range challenges {
+		cts, err := cs.challengeTagRepository.FindTagsIdsByChallengeId(challenge.ID)
+		if err != nil {
+			fmt.Println("error =", err.Error())
+		}
+		for _, challengeTag := range cts {
+			tag, err := cs.tagRepository.FindTagById(challengeTag.TagId)
+			if err != nil {
+				fmt.Println("error =", err.Error())
+				continue
+			}
+			challenge.Tags = append(challenge.Tags, *tag)
+		}
 		challengeExternalId := "challenge_" + challenge.ID
 		attachment, err := cs.attachmentService.GetAttachmentByExternalId(challengeExternalId)
 		if err != nil {
