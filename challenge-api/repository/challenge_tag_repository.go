@@ -33,7 +33,7 @@ func NewChallengeTagRepository(db *sql.DB) ChallengeTagRepository {
 }
 
 func (ct *challengeTagRepository) CreateChallengeTag(challengeTag *model.ChallengeTag) (*model.ChallengeTag, error) {
-	row := ct.db.QueryRow("insert into challenge_tag (challenge_tag, tag_id) "+
+	row := ct.db.QueryRow("insert into challenge_tag (challenge_id, tag_id) "+
 		"values ($1, $2)", &challengeTag.ChallengeId, &challengeTag.TagId)
 	if row.Err() != nil {
 		return nil, row.Err()

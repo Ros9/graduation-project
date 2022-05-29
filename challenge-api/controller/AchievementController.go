@@ -56,7 +56,11 @@ func (ac *achievementController) GetAchievement() gin.HandlerFunc {
 
 func (ac *achievementController) GetAchievements() gin.HandlerFunc {
 	return func(context *gin.Context) {
-
+		achievements, err := ac.achievementService.GetAchievements()
+		if err != nil {
+			context.JSON(500, err.Error())
+		}
+		context.JSON(200, achievements)
 	}
 }
 

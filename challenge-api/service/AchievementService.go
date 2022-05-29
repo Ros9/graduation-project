@@ -17,11 +17,13 @@ type achievementService struct {
 	achievementsRepository   repository.AchievementRepository
 	achievementTagRepository repository.AchievementTagRepository
 	tagRepository            repository.TagRepository
+	attachmentService        AttachmentService
 }
 
 func NewAchievementService(achievementsRepository repository.AchievementRepository,
-	achievementTagRepository repository.AchievementTagRepository, tagRepository repository.TagRepository) AchievementService {
-	return &achievementService{achievementsRepository, achievementTagRepository, tagRepository}
+	achievementTagRepository repository.AchievementTagRepository, tagRepository repository.TagRepository, attachmentService AttachmentService) AchievementService {
+	return &achievementService{achievementsRepository, achievementTagRepository,
+		tagRepository, attachmentService}
 }
 
 func (cs *achievementService) CreateAchievement(achievement *model.Achievement) (*model.Achievement, error) {
@@ -35,11 +37,16 @@ func (cs *achievementService) CreateAchievement(achievement *model.Achievement) 
 		return nil, err
 	}
 	for _, tagId := range achievement.TagsIds {
+		tag, err := cs.tagRepository.FindTagById(tagId)
+		if err != nil {
+			fmt.Println("error =", err.Error())
+			return nil, err
+		}
 		achievementTag := &model.AchievementTag{
 			AchievementId: achievement.ID,
-			TagId:         tagId,
+			TagId:         tag.ID,
 		}
-		_, err := cs.achievementTagRepository.CreateAchievementTag(achievementTag)
+		_, err = cs.achievementTagRepository.CreateAchievementTag(achievementTag)
 		if err != nil {
 			fmt.Println("error =", err.Error())
 		}
@@ -51,6 +58,15 @@ func (cs *achievementService) GetAchievement(achievementId string) (*model.Achie
 	achievement, err := cs.achievementsRepository.FindAchievementById(achievementId)
 	if err != nil {
 		return nil, err
+	}
+	achievementExternalId := "achievement_" + achievement.ID
+	attachment, err := cs.attachmentService.GetAttachmentByExternalId(achievementExternalId)
+	if err != nil {
+		fmt.Println("error =", err.Error())
+		return nil, err
+	}
+	if attachment != nil {
+		achievement.ImageUrl = "/assets/image/" + achievementExternalId
 	}
 	ats, err := cs.achievementTagRepository.FindTagsIdsByAchievementId(achievementId)
 	if err != nil {
@@ -67,5 +83,21 @@ func (cs *achievementService) GetAchievement(achievementId string) (*model.Achie
 }
 
 func (cs *achievementService) GetAchievements() ([]*model.Achievement, error) {
-	return []*model.Achievement{}, nil
+	achievements, err := cs.achievementsRepository.FindAchievements()
+	if err != nil {
+		fmt.Println("error =", err.Error())
+		return nil, err
+	}
+	for _, achievement := range achievements {
+		achievementExternalId := "achievement_" + achievement.ID
+		attachment, err := cs.attachmentService.GetAttachmentByExternalId(achievementExternalId)
+		if err != nil {
+			fmt.Println("error =", err.Error())
+			return nil, err
+		}
+		if attachment != nil {
+			achievement.ImageUrl = "/assets/image/" + achievementExternalId
+		}
+	}
+	return achievements, nil
 }

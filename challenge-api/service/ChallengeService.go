@@ -48,7 +48,7 @@ func (cs *challengeService) CreateChallenge(challenge *model.Challenge) (*model.
 	for _, tagId := range challenge.TagsIds {
 		tag, err := cs.tagRepository.FindTagById(tagId)
 		if err != nil {
-			fmt.Println("error =", err.Error())
+			fmt.Println("error here =", err.Error())
 			continue
 		}
 		challengeTag := &model.ChallengeTag{

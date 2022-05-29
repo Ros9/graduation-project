@@ -35,7 +35,7 @@ func NewAchievementRepository(db *sql.DB) AchievementRepository {
 }
 
 func (ar *achievementRepository) CreateAchievement(achievement *model.Achievement) (*model.Achievement, error) {
-	row := ar.db.QueryRow("insert into achievements (id, name, description) "+
+	row := ar.db.QueryRow("insert into achievements (id, title, description) "+
 		"values ($1, $2, $3)", &achievement.ID, &achievement.Title, &achievement.Description)
 	if row.Err() != nil {
 		return nil, row.Err()

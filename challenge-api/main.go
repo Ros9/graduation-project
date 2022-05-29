@@ -14,8 +14,8 @@ import (
 func main() {
 	router := gin.Default()
 
-	dbConnString := "postgres://postgres:1234@localhost:5432/CityGoDB?sslmode=disable" //Alibi :)
-	//dbConnString := "postgres://postgres:@localhost:5432/citygodb?sslmode=disable"
+	//dbConnString := "postgres://postgres:1234@localhost:5432/CityGoDB?sslmode=disable" //Alibi :)
+	dbConnString := "postgres://postgres:@localhost:5432/citygodb?sslmode=disable"
 	dbConnection, err := sql.Open("postgres", dbConnString)
 
 	if err != nil {
@@ -47,7 +47,7 @@ func main() {
 		userTagRepository, achievementTagRepository, userAchievementRepository)
 	commentService := service.NewCommentService(commentRepository)
 	tagService := service.NewTagService(tagRepository)
-	achievementService := service.NewAchievementService(achievementRepository, achievementTagRepository, tagRepository)
+	achievementService := service.NewAchievementService(achievementRepository, achievementTagRepository, tagRepository, attachmentService)
 	bonusService := service.NewBonusService(bonusRepository)
 	achievementTagService := service.NewAchievementTagService(achievementTagRepository)
 
@@ -113,7 +113,7 @@ func main() {
 
 	router.Handle("POST", "/achievement", achievementController.CreateAchievement())
 	router.Handle("GET", "/achievement/:id", achievementController.GetAchievement())
-	router.Handle("GET", "/achievement", achievementController.GetAchievements())
+	router.Handle("GET", "/achievements", achievementController.GetAchievements())
 	router.Handle("PUT", "/achievement/:id", achievementController.UpdateAchievement())
 	router.Handle("DELETE", "/achievement/:id", achievementController.DeleteAchievement())
 
