@@ -61,6 +61,7 @@ func (p *Processor) Process(event events.Event, commandHistory *[]commandshistor
 }
 
 func (p *Processor) processMessage(event events.Event, commandHistory *[]commandshistory.CommandHistoryItem) error {
+	//fmt.Println("FACEBOOK", event.Meta)
 	meta, err := meta(event)
 	if err != nil {
 		return e.Wrap("can't process message", err)

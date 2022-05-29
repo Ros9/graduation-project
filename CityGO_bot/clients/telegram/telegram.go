@@ -2,6 +2,7 @@ package telegram
 
 import (
 	"encoding/json"
+	"fmt"
 	"graduation-project/CityGO_bot/lib/e"
 	"io"
 	"net/http"
@@ -51,6 +52,7 @@ func (c *Client) Updates(offset int, limit int) (updates []Update, err error) {
 		return nil, err
 	}
 
+	fmt.Println("res = ", res)
 	return res.Result, nil
 }
 
