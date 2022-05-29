@@ -100,6 +100,7 @@ func (cs *userService) GetUserByTelegram(userTelegram string) (*model.UserTelegr
 		Password: "",
 		Email:    user.Email,
 		Telegram: user.Telegram,
+		IsAdmin:  user.IsAdmin,
 	}
 	for _, challenge := range userChallenges {
 		ch := model.ChallengeTelegramResponse(*challenge)

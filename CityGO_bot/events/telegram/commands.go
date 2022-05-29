@@ -143,10 +143,10 @@ func (p *Processor) doCmd(text string, chatID int, username string, commandHisto
 				}
 				fmt.Println("CHALLENGE CREATE:", challenge)
 
-				backend.CreateChallenge(challenge)
+				result := backend.CreateChallenge(challenge)
 
 				*commandHistory = nil
-				return p.tg.SendMessage(chatID, "---")
+				return p.tg.SendMessage(chatID, result)
 			default:
 				return p.tg.SendMessage(chatID, msgCodeNotFound)
 			}

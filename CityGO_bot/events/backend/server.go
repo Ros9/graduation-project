@@ -86,6 +86,25 @@ func PostAnswerCode(userID, code string) (resultMessage string, err error) {
 	return
 }
 
-func CreateChallenge(challenge models.Challenge) {
-	//Создание
+func CreateChallenge(challenge models.Challenge) (result string) {
+	body, _ := json.Marshal(challenge)
+
+	resp, err := http.Post(serverUrl+"challenge/telegram", "application/json", bytes.NewBuffer(body))
+	if err != nil {
+		log.Printf("CreateChallenge | Error: %v", err)
+		return
+	}
+	defer resp.Body.Close()
+	//Сделать реализацию клиент - сервис.
+	resultChallenge := models.Challenge{}
+	respBody, err := ioutil.ReadAll(resp.Body)
+	json.Unmarshal(respBody, &resultChallenge)
+	log.Printf("CreateChallenge | Info: result - %v", resultChallenge)
+
+	if resultChallenge.Title == challenge.Title && resultChallenge.Description == challenge.Description {
+		result = "Челлендж " + resultChallenge.Title + " успешно создан\n(id = \"" + resultChallenge.ID + "\")"
+	} else {
+		result = "Error, try again"
+	}
+	return
 }

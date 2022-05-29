@@ -3,14 +3,16 @@ package controller
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"graduation-project/challenge-api/model"
 	"graduation-project/challenge-api/service"
 	"io/ioutil"
+
+	"github.com/gin-gonic/gin"
 )
 
 type ChallengeController interface {
 	CreateChallenge() gin.HandlerFunc
+	CreateChallengeByTelegram() gin.HandlerFunc
 	GetChallenge() gin.HandlerFunc
 	GetChallenges() gin.HandlerFunc
 	GetChallengesTgResp() gin.HandlerFunc
@@ -26,6 +28,26 @@ type challengeController struct {
 
 func NewChallengeController(challengeService service.ChallengeService) ChallengeController {
 	return &challengeController{challengeService}
+}
+
+func (cc *challengeController) CreateChallengeByTelegram() gin.HandlerFunc {
+	return func(context *gin.Context) {
+		jsonData, err := ioutil.ReadAll(context.Request.Body)
+		if err != nil {
+			context.JSON(500, err.Error())
+		}
+		challenge := &model.Challenge{}
+		err = json.Unmarshal(jsonData, challenge)
+		if err != nil {
+			context.JSON(404, err.Error())
+		}
+		//challenge.CompanyID = companyId
+		createdChallenge, err := cc.challengeService.CreateChallenge(challenge)
+		if err != nil {
+			context.JSON(404, err.Error())
+		}
+		context.JSON(200, createdChallenge)
+	}
 }
 
 func (cc *challengeController) CreateChallenge() gin.HandlerFunc {
