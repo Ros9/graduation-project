@@ -2,7 +2,6 @@ package commandshistory
 
 import (
 	"bufio"
-	"fmt"
 	"graduation-project/CityGO_bot/models"
 	"strings"
 )
@@ -38,6 +37,6 @@ func StringToIdList(s string) (ids []string) {
 		prevId = i + 1
 	}
 
-	fmt.Println("IDS STRING TO IDS: ", ids)
+	//fmt.Println("IDS STRING TO IDS: ", ids)
 	return
 }

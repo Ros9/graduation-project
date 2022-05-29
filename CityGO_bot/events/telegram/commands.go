@@ -23,7 +23,7 @@ type TestMessage struct {
 	Message string //`json: "message"`
 }
 
-func (p *Processor) doCmd(text string, chatID int, username string, commandHistory *[]commandshistory.CommandHistoryItem) error {
+func (p *Processor) doCmd(text string, chatID int, username string, photoId string, commandHistory *[]commandshistory.CommandHistoryItem) error {
 	text = strings.TrimSpace(text)
 
 	log.Printf("got new command '%s' from '%s", text, username)
@@ -122,7 +122,7 @@ func (p *Processor) doCmd(text string, chatID int, username string, commandHisto
 	default:
 
 		//fmt.Println("\n\n\nHandleEventsCOOOOOOOOOMM = ", commandHistory, "\n", *commandHistory, "\n", &commandHistory, "======\n\n\n")
-		fmt.Println("size:", len(*commandHistory))
+		//fmt.Println("size:", len(*commandHistory))
 		if currentUser.IsAdmin == 1 && len(*commandHistory) > 0 {
 			history := *commandHistory
 			switch history[len(history)-1].Text {
@@ -143,10 +143,27 @@ func (p *Processor) doCmd(text string, chatID int, username string, commandHisto
 				}
 				fmt.Println("CHALLENGE CREATE:", challenge)
 
-				result := backend.CreateChallenge(challenge)
+				result, createdChallenge := backend.CreateChallenge(challenge)
+				*commandHistory = append(*commandHistory, commandshistory.CommandHistoryItem{ChatId: chatID, Text: createdChallenge.ID, User: currentUser})
+				*commandHistory = append(*commandHistory, commandshistory.CommandHistoryItem{ChatId: chatID, Text: "/createchallenge/pic", User: currentUser})
+				//*commandHistory = nil
+				//stop3 Надо везде пихнуть коммандХистори = нил, чтобы если админ не отправил сразу картинку или после
+				//админской команды начал пользоваться другими командами быстро забыть о админских командах
+				return p.tg.SendMessage(chatID, result)
+			case "/createchallenge/pic":
+				if text != "" && photoId == "" {
+					*commandHistory = nil
+					return p.tg.SendMessage(chatID, msgCodeNotFound)
+				}
+				fmt.Println("/createchallenge/pic -", photoId)
+
+				challengeId := history[len(history)-2].Text
+				fileInfo, _ := p.tg.GetFile(photoId)
+
+				fmt.Println("INTHECOMMANDS ", fileInfo, " +++++ ", challengeId)
 
 				*commandHistory = nil
-				return p.tg.SendMessage(chatID, result)
+				return p.tg.SendMessage(chatID, "/createchallenge/pic")
 			default:
 				return p.tg.SendMessage(chatID, msgCodeNotFound)
 			}

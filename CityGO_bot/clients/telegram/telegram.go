@@ -1,10 +1,13 @@
 package telegram
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"graduation-project/CityGO_bot/lib/e"
 	"io"
+	"io/ioutil"
+	"log"
 	"net/http"
 	"net/url"
 	"path"
@@ -52,7 +55,7 @@ func (c *Client) Updates(offset int, limit int) (updates []Update, err error) {
 		return nil, err
 	}
 
-	fmt.Println("res = ", res)
+	//fmt.Println("res = ", res)
 	return res.Result, nil
 }
 
@@ -78,6 +81,12 @@ func (c *Client) doRequest(method string, query url.Values) (data []byte, err er
 		Path:   path.Join(c.basePath, method),
 	}
 
+	// fmt.Println("Host:", c.host)
+	// fmt.Println("Path:", path.Join(c.basePath, method))
+	// fmt.Println("   c.basePath:", c.basePath)
+	// fmt.Println("   method:", method)
+
+	// fmt.Println("\n\nURRRRLLLL: ", u.String())
 	req, err := http.NewRequest(http.MethodGet, u.String(), nil)
 	if err != nil {
 		return nil, err
@@ -97,4 +106,25 @@ func (c *Client) doRequest(method string, query url.Values) (data []byte, err er
 	}
 
 	return body, nil
+}
+
+func (c *Client) GetFile(id string) (fileInfo GetFileRespInfo, err error) {
+
+	fmt.Println("NEW URL GetFile ", "https://"+c.host+"/"+c.basePath+"/getFile")
+	request := GetFileReq{FileId: id}
+	body, _ := json.Marshal(request)
+
+	resp, err := http.Post("https://"+c.host+"/"+c.basePath+"/getFile", "application/json", bytes.NewBuffer(body))
+	if err != nil {
+		log.Printf("GetFile | Error: %v", err)
+		return
+	}
+	defer resp.Body.Close()
+	//Сделать реализацию клиент - сервис.
+	result := GetFileResp{}
+	respBody, err := ioutil.ReadAll(resp.Body)
+	json.Unmarshal(respBody, &result)
+	log.Printf("GetFile | Info: result - %v", result)
+	fileInfo = result.Result
+	return
 }

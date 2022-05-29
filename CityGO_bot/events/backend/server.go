@@ -53,9 +53,9 @@ func GetAvailableChallenges() (challenges []models.Challenge, err error) {
 	json.Unmarshal(body, &challenges)
 	log.Printf("GetAvailableChallenges | Info: user %v found", challenges)
 
-	for _, x := range challenges {
-		fmt.Println(x)
-	}
+	// for _, x := range challenges {
+	// 	fmt.Println(x)
+	// }
 
 	return
 }
@@ -86,7 +86,7 @@ func PostAnswerCode(userID, code string) (resultMessage string, err error) {
 	return
 }
 
-func CreateChallenge(challenge models.Challenge) (result string) {
+func CreateChallenge(challenge models.Challenge) (result string, challengeResponse models.Challenge) {
 	body, _ := json.Marshal(challenge)
 
 	resp, err := http.Post(serverUrl+"challenge/telegram", "application/json", bytes.NewBuffer(body))
@@ -102,9 +102,11 @@ func CreateChallenge(challenge models.Challenge) (result string) {
 	log.Printf("CreateChallenge | Info: result - %v", resultChallenge)
 
 	if resultChallenge.Title == challenge.Title && resultChallenge.Description == challenge.Description {
-		result = "Челлендж " + resultChallenge.Title + " успешно создан\n(id = \"" + resultChallenge.ID + "\")"
+		result = "Челлендж " + resultChallenge.Title + " успешно создан!\n(id = \"" + resultChallenge.ID + "\")\n\n Вы можете отправить фото для Челленджа"
 	} else {
 		result = "Error, try again"
 	}
+	challengeResponse = resultChallenge
+
 	return
 }
