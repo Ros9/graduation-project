@@ -129,6 +129,14 @@ func (c *Client) GetFile(id string) (fileInfo GetFileRespInfo, err error) {
 	return
 }
 
+func (c *Client) FileLink(fileInfo GetFileRespInfo) (filePath string) {
+	//https://api.telegram.org/file/bot5207175858:AAEAt-fvFASGsEQO0tTUmmhv5J02f9O2p3k/thumbnails/file_0.jpg
+
+	fmt.Println("\n\n\n\nFileLink = https://" + c.host + "/file/" + c.basePath + "/" + fileInfo.FilePath + "\n\n\n")
+	filePath = "https://" + c.host + "/file/" + c.basePath + "/" + fileInfo.FilePath
+	return
+}
+
 func (c *Client) DownloadFileByPath(fileInfo GetFileRespInfo) (filePath string) {
 	//https://api.telegram.org/file/bot5207175858:AAEAt-fvFASGsEQO0tTUmmhv5J02f9O2p3k/thumbnails/file_0.jpg
 

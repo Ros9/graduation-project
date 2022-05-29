@@ -14,8 +14,8 @@ import (
 func main() {
 	router := gin.Default()
 
-	//dbConnString := "postgres://postgres:1234@localhost:5432/CityGoDB?sslmode=disable" //Alibi :)
-	dbConnString := "postgres://postgres:@localhost:5432/citygodb?sslmode=disable"
+	dbConnString := "postgres://postgres:1234@localhost:5432/CityGoDB?sslmode=disable" //Alibi :)
+	//dbConnString := "postgres://postgres:@localhost:5432/citygodb?sslmode=disable"
 	dbConnection, err := sql.Open("postgres", dbConnString)
 
 	if err != nil {
@@ -104,6 +104,7 @@ func main() {
 	router.Handle("DELETE", "/comment/:id", commentController.DeleteComment())
 
 	router.Handle("POST", "/attachment", attachmentController.UploadAttachment())
+	router.Handle("POST", "/attachment/telegram", attachmentController.UploadAttachmentFromTelegram())
 	router.Handle("GET", "/attachment/:id", attachmentController.GetAttachment())
 
 	router.Handle("POST", "/tag", tagController.CreateTag())
