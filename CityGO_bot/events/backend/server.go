@@ -53,9 +53,9 @@ func GetAvailableChallenges() (challenges []models.Challenge, err error) {
 	json.Unmarshal(body, &challenges)
 	log.Printf("GetAvailableChallenges | Info: user %v found", challenges)
 
-	for _, x := range challenges {
-		fmt.Println(x)
-	}
+	// for _, x := range challenges {
+	// 	fmt.Println(x)
+	// }
 
 	return
 }
@@ -86,7 +86,7 @@ func PostAnswerCode(userID, code string) (resultMessage string, err error) {
 	return
 }
 
-func CreateChallenge(challenge models.Challenge) (result string) {
+func CreateChallenge(challenge models.Challenge) (result string, challengeResponse models.Challenge) {
 	body, _ := json.Marshal(challenge)
 
 	resp, err := http.Post(serverUrl+"challenge/telegram", "application/json", bytes.NewBuffer(body))
@@ -102,9 +102,72 @@ func CreateChallenge(challenge models.Challenge) (result string) {
 	log.Printf("CreateChallenge | Info: result - %v", resultChallenge)
 
 	if resultChallenge.Title == challenge.Title && resultChallenge.Description == challenge.Description {
-		result = "Челлендж " + resultChallenge.Title + " успешно создан\n(id = \"" + resultChallenge.ID + "\")"
+		result = "Челлендж " + resultChallenge.Title + " успешно создан!\n(id = \"" + resultChallenge.ID + "\")\n\n Вы можете отправить фото для Челленджа"
 	} else {
 		result = "Error, try again"
 	}
+	challengeResponse = resultChallenge
 	return
 }
+
+// func PostAttachment(objType, challengeId, filePath string) {
+// 	values := map[string]io.Reader{
+// 		"file":  mustOpen("main.go"), // lets assume its this file
+// 		"other": strings.NewReader("hello world!"),
+// 	}
+// 	err := Upload(serverUrl+"attachment", values)
+// 	if err != nil {
+// 		panic(err)
+// 	}
+// }
+
+// func Upload(url string, values map[string]io.Reader) (err error) {
+// 	// Prepare a form that you will submit to that URL.
+// 	var b bytes.Buffer
+// 	w := multipart.NewWriter(&b)
+// 	for key, r := range values {
+// 		var fw io.Writer
+// 		if x, ok := r.(io.Closer); ok {
+// 			defer x.Close()
+// 		}
+// 		// Add an image file
+// 		if x, ok := r.(*os.File); ok {
+// 			if fw, err = w.CreateFormFile(key, x.Name()); err != nil {
+// 				return
+// 			}
+// 		} else {
+// 			// Add other fields
+// 			if fw, err = w.CreateFormField(key); err != nil {
+// 				return
+// 			}
+// 		}
+// 		if _, err = io.Copy(fw, r); err != nil {
+// 			return err
+// 		}
+
+// 	}
+// 	// Don't forget to close the multipart writer.
+// 	// If you don't close it, your request will be missing the terminating boundary.
+// 	w.Close()
+
+// 	// Now that you have a form, you can submit it to your handler.
+// 	req, err := http.NewRequest("POST", url, &b)
+// 	if err != nil {
+// 		return
+// 	}
+// 	// Don't forget to set the content type, this will contain the boundary.
+// 	req.Header.Set("Content-Type", w.FormDataContentType())
+
+// 	client := http.Client{}
+// 	// Submit the request
+// 	res, err := client.Do(req)
+// 	if err != nil {
+// 		return
+// 	}
+
+// 	// Check the response
+// 	if res.StatusCode != http.StatusOK {
+// 		err = fmt.Errorf("bad status: %s", res.Status)
+// 	}
+// 	return
+// }

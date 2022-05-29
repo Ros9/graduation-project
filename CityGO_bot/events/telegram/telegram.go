@@ -42,6 +42,7 @@ func (p *Processor) Fetch(limit int) ([]events.Event, error) {
 
 	res := make([]events.Event, 0, len(updates))
 
+	//stop1
 	for _, u := range updates {
 		res = append(res, event(u))
 	}
@@ -62,12 +63,14 @@ func (p *Processor) Process(event events.Event, commandHistory *[]commandshistor
 
 func (p *Processor) processMessage(event events.Event, commandHistory *[]commandshistory.CommandHistoryItem) error {
 	//fmt.Println("FACEBOOK", event.Meta)
+	//fmt.Println("\n\nFACEBOOK2", event.PhotoId)
+
 	meta, err := meta(event)
 	if err != nil {
 		return e.Wrap("can't process message", err)
 	}
 
-	if err := p.doCmd(event.Text, meta.ChatID, meta.Username, commandHistory); err != nil {
+	if err := p.doCmd(event.Text, meta.ChatID, meta.Username, event.PhotoId, commandHistory); err != nil {
 		return e.Wrap("can't process message", err)
 	}
 
@@ -87,8 +90,10 @@ func event(upd telegram.Update) events.Event {
 	updType := fetchType(upd)
 
 	res := events.Event{
-		Type: updType,
-		Text: fetchText(upd),
+		Type:    updType,
+		Text:    fetchText(upd),
+		PhotoId: fetchPhotoId(upd),
+		//stop2 мб тут сделать поле фото, и потом передвать фото до командс?....
 	}
 
 	if updType == events.Message {
@@ -115,4 +120,12 @@ func fetchType(upd telegram.Update) events.Type {
 	}
 
 	return events.Message
+}
+
+func fetchPhotoId(upd telegram.Update) (photoId string) {
+	//upd.Message.Photo[len(upd.Message.Photo)-1].FileId,
+	if len(upd.Message.Photo) > 0 {
+		photoId = upd.Message.Photo[len(upd.Message.Photo)-1].FileId
+	}
+	return
 }
