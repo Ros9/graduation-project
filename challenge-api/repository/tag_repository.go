@@ -2,6 +2,7 @@ package repository
 
 import (
 	"database/sql"
+	"fmt"
 	"github.com/prometheus/common/log"
 	"graduation-project/challenge-api/model"
 )
@@ -9,6 +10,7 @@ import (
 type TagRepository interface {
 	CreateTag(tag *model.Tag) (*model.Tag, error)
 	FindTagById(tagId string) (*model.Tag, error)
+	FindTags() ([]*model.Tag, error)
 }
 
 type tagRepository struct {
@@ -33,7 +35,7 @@ func NewTagRepository(db *sql.DB) TagRepository {
 }
 
 func (tr *tagRepository) CreateTag(tag *model.Tag) (*model.Tag, error) {
-	row := tr.db.QueryRow("insert into tags (id, name, description) "+
+	row := tr.db.QueryRow("insert into tags (id, title, description) "+
 		"values ($1, $2, $3)", &tag.ID, &tag.Title, &tag.Description)
 	if row.Err() != nil {
 		return nil, row.Err()
@@ -49,4 +51,22 @@ func (tr *tagRepository) FindTagById(tagId string) (*model.Tag, error) {
 		return nil, err
 	}
 	return tag, nil
+}
+
+func (tr *tagRepository) FindTags() ([]*model.Tag, error) {
+	rows, err := tr.db.Query("select * from tags")
+	if err != nil {
+		return nil, err
+	}
+	tags := []*model.Tag{}
+	for rows.Next() {
+		tag := &model.Tag{}
+		err := rows.Scan(&tag.ID, &tag.Title, &tag.Description)
+		if err != nil {
+			fmt.Println("error =", err.Error())
+			return nil, err
+		}
+		tags = append(tags, tag)
+	}
+	return tags, nil
 }

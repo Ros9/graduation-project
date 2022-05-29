@@ -56,7 +56,11 @@ func (tc *tagController) GetTag() gin.HandlerFunc {
 
 func (tc *tagController) GetTags() gin.HandlerFunc {
 	return func(context *gin.Context) {
-
+		tags, err := tc.tagService.GetTags()
+		if err != nil {
+			context.JSON(500, err.Error())
+		}
+		context.JSON(200, tags)
 	}
 }
 

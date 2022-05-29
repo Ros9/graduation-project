@@ -107,7 +107,7 @@ func main() {
 
 	router.Handle("POST", "/tag", tagController.CreateTag())
 	router.Handle("GET", "/tag/:id", tagController.GetTag())
-	router.Handle("GET", "/tag", tagController.GetTags())
+	router.Handle("GET", "/tags", tagController.GetTags())
 	router.Handle("PUT", "/tag/:id", tagController.UpdateTag())
 	router.Handle("DELETE", "/tag/:id", tagController.DeleteTag())
 

@@ -42,5 +42,9 @@ func (ts *tagService) GetTag(tagID string) (*model.Tag, error) {
 }
 
 func (ts *tagService) GetTags() ([]*model.Tag, error) {
-	return []*model.Tag{}, nil
+	tags, err := ts.tagRepository.FindTags()
+	if err != nil {
+		return nil, err
+	}
+	return tags, nil
 }
