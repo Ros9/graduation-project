@@ -128,3 +128,24 @@ func (c *Client) GetFile(id string) (fileInfo GetFileRespInfo, err error) {
 	fileInfo = result.Result
 	return
 }
+
+func (c *Client) DownloadFileByPath(fileInfo GetFileRespInfo) (filePath string) {
+	//https://api.telegram.org/file/bot5207175858:AAEAt-fvFASGsEQO0tTUmmhv5J02f9O2p3k/thumbnails/file_0.jpg
+
+	path := fileInfo.FilePath
+	fmt.Println("\n\n\n\nhttps://" + c.host + "/file/" + c.basePath + "/" + path + "\n\n\n")
+	resp, err := http.Get("https://" + c.host + "/file/" + c.basePath + "/" + path)
+	if err != nil {
+		log.Printf("DownloadFileByPath | Error: %v", err)
+		return
+	}
+	defer resp.Body.Close()
+	data, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		fmt.Println("error =", err.Error())
+	}
+	filePath = fmt.Sprintf("temp/pics/%s.jpeg", fileInfo.FileId)
+	ioutil.WriteFile(filePath, data, 0666)
+	//log.Println("I saved your image buddy!")
+	return
+}
