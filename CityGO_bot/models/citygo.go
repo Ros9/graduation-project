@@ -76,3 +76,8 @@ type Result struct {
 	Status    int       `json:"status"`
 	Challenge Challenge `json:"challenge"`
 }
+
+type AttachmentLinkReq struct {
+	ExternalId string `json:"external_id"`
+	Link       string `json:"link"`
+}

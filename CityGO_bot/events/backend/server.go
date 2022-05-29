@@ -110,6 +110,23 @@ func CreateChallenge(challenge models.Challenge) (result string, challengeRespon
 	return
 }
 
+func PostAttachment(objType, challengeId, fileLink string) {
+	attachmentReq := models.AttachmentLinkReq{ExternalId: objType + challengeId, Link: fileLink}
+	body, _ := json.Marshal(attachmentReq)
+
+	resp, err := http.Post(serverUrl+"attachment/telegram", "application/json", bytes.NewBuffer(body))
+	if err != nil {
+		log.Printf("CreateChallenge | Error: %v", err)
+		return
+	}
+	defer resp.Body.Close()
+	// //Сделать реализацию клиент - сервис.
+	// resultChallenge := models.Challenge{}
+	// respBody, err := ioutil.ReadAll(resp.Body)
+	// json.Unmarshal(respBody, &resultChallenge)
+	//log.Printf("CreateChallenge | Info: result - %v", resultChallenge)
+}
+
 // func PostAttachment(objType, challengeId, filePath string) {
 // 	values := map[string]io.Reader{
 // 		"file":  mustOpen("main.go"), // lets assume its this file

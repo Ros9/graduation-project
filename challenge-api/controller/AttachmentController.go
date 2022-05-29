@@ -1,15 +1,19 @@
 package controller
 
 import (
+	"encoding/json"
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"graduation-project/challenge-api/model"
 	"graduation-project/challenge-api/service"
+	"io/ioutil"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
 type AttachmentController interface {
 	UploadAttachment() gin.HandlerFunc
+	UploadAttachmentFromTelegram() gin.HandlerFunc
 	GetAttachment() gin.HandlerFunc
 }
 
@@ -38,6 +42,28 @@ func (ac *attachmentController) UploadAttachment() gin.HandlerFunc {
 			context.JSON(404, err.Error())
 		}
 		context.JSON(200, createdAttachment)
+	}
+}
+
+func (ac *attachmentController) UploadAttachmentFromTelegram() gin.HandlerFunc {
+	return func(context *gin.Context) {
+		jsonData, err := ioutil.ReadAll(context.Request.Body)
+		if err != nil {
+			context.JSON(500, err.Error())
+		}
+		attachmentLinkReq := &model.AttachmentLinkReq{}
+		err = json.Unmarshal(jsonData, attachmentLinkReq)
+		if err != nil {
+			context.JSON(404, err.Error())
+		}
+		fmt.Println("\n\n\nATTTTTAAACHH ", attachmentLinkReq)
+		//=====================================================
+		// todo@Ros9 Скачать по ссылке и сунуть в бд
+		//=====================================================
+		if err != nil {
+			context.JSON(404, err.Error())
+		}
+		//context.JSON(200, createdAttachment)
 	}
 }
 

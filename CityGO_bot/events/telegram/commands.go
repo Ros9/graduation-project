@@ -161,10 +161,11 @@ func (p *Processor) doCmd(text string, chatID int, username string, photoId stri
 				fileInfo, _ := p.tg.GetFile(photoId)
 				fmt.Println("INTHECOMMANDS ", fileInfo, " +++++ ", challengeId)
 
-				filePath := p.tg.DownloadFileByPath(fileInfo)
+				//filePath := p.tg.DownloadFileByPath(fileInfo)
 
-				fmt.Println("filePath:", filePath)
-				//backend.PostAttachment("challenge_", challengeId, filePath)
+				fileLink := p.tg.FileLink(fileInfo)
+				fmt.Println("fileLink:", fileLink)
+				backend.PostAttachment("challenge_", challengeId, fileLink)
 
 				*commandHistory = nil
 				return p.tg.SendMessage(chatID, "/createchallenge/pic")
