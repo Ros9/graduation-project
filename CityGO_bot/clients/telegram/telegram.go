@@ -110,7 +110,7 @@ func (c *Client) doRequest(method string, query url.Values) (data []byte, err er
 
 func (c *Client) GetFile(id string) (fileInfo GetFileRespInfo, err error) {
 
-	fmt.Println("NEW URL GetFile ", "https://"+c.host+"/"+c.basePath+"/getFile")
+	//fmt.Println("NEW URL GetFile ", "https://"+c.host+"/"+c.basePath+"/getFile")
 	request := GetFileReq{FileId: id}
 	body, _ := json.Marshal(request)
 
@@ -132,7 +132,7 @@ func (c *Client) GetFile(id string) (fileInfo GetFileRespInfo, err error) {
 func (c *Client) FileLink(fileInfo GetFileRespInfo) (filePath string) {
 	//https://api.telegram.org/file/bot5207175858:AAEAt-fvFASGsEQO0tTUmmhv5J02f9O2p3k/thumbnails/file_0.jpg
 
-	fmt.Println("\n\n\n\nFileLink = https://" + c.host + "/file/" + c.basePath + "/" + fileInfo.FilePath + "\n\n\n")
+	//fmt.Println("\n\n\n\nFileLink = https://" + c.host + "/file/" + c.basePath + "/" + fileInfo.FilePath + "\n\n\n")
 	filePath = "https://" + c.host + "/file/" + c.basePath + "/" + fileInfo.FilePath
 	return
 }
@@ -141,7 +141,7 @@ func (c *Client) DownloadFileByPath(fileInfo GetFileRespInfo) (filePath string) 
 	//https://api.telegram.org/file/bot5207175858:AAEAt-fvFASGsEQO0tTUmmhv5J02f9O2p3k/thumbnails/file_0.jpg
 
 	path := fileInfo.FilePath
-	fmt.Println("\n\n\n\nhttps://" + c.host + "/file/" + c.basePath + "/" + path + "\n\n\n")
+	//fmt.Println("\n\n\n\nhttps://" + c.host + "/file/" + c.basePath + "/" + path + "\n\n\n")
 	resp, err := http.Get("https://" + c.host + "/file/" + c.basePath + "/" + path)
 	if err != nil {
 		log.Printf("DownloadFileByPath | Error: %v", err)
