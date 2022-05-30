@@ -15,8 +15,8 @@ import (
 func main() {
 	router := gin.Default()
 
-	dbConnString := "postgres://postgres:1234@localhost:5432/CityGoDB?sslmode=disable" //Alibi :)
-	//dbConnString := "postgres://postgres:@localhost:5432/citygodb?sslmode=disable"
+	//dbConnString := "postgres://postgres:1234@localhost:5432/CityGoDB?sslmode=disable" //Alibi :)
+	dbConnString := "postgres://postgres:@localhost:5432/citygodb?sslmode=disable"
 	dbConnection, err := sql.Open("postgres", dbConnString)
 
 	if err != nil {

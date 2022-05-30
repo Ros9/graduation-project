@@ -56,6 +56,9 @@ func main() {
 			isOnline = true
 		}
 		challenges := GetChallenges()
+		for _, challenge := range challenges {
+			challenge.EndDate = challenge.EndDate[0:10]
+		}
 		fmt.Println("challenges =", challenges)
 		companies := GetCompanies()
 		data := map[string]interface{}{
@@ -80,6 +83,7 @@ func main() {
 		}
 		challengeId := context.Param("id")
 		challenge := GetChallengeById(challengeId)
+		challenge.EndDate = challenge.EndDate[0:10]
 		company := GetCompanyById(challenge.CompanyID)
 		comments, err := GetCommentsByChallengeId(challengeId)
 		if err != nil {
@@ -96,7 +100,7 @@ func main() {
 		context.HTML(200, "detail-quest.html", data)
 	})
 
-	router.GET("/profile2", func(context *gin.Context) {
+	router.GET("/my-profile", func(context *gin.Context) {
 		token, err := context.Cookie("token")
 		if err != nil {
 			fmt.Println("error =", err.Error())
@@ -146,7 +150,7 @@ func main() {
 			fmt.Println("error =", err.Error())
 		}
 		fmt.Println("user =", createdUser)
-		context.Redirect(301, "/signin")
+		context.Redirect(302, "/signin")
 	})
 
 	router.Handle("POST", "/login", func(context *gin.Context) {
@@ -170,7 +174,7 @@ func main() {
 		context.SetCookie("token", tokenStr, 600, "/", "", true, true)
 		sessions[tokenStr] = user
 		fmt.Println("user =", user)
-		context.Redirect(301, "/index")
+		context.Redirect(302, "/index")
 	})
 
 	router.POST("/answer", func(context *gin.Context) {
@@ -187,7 +191,7 @@ func main() {
 		}
 		fmt.Println(user, isOnline)
 		if !isOnline {
-			context.Redirect(301, "/signin")
+			context.Redirect(302, "/signin")
 			return
 		}
 		answerStr := context.Request.FormValue("answer")
@@ -199,7 +203,7 @@ func main() {
 			Status:      1,
 		}
 		GiveAnswer(token, answer)
-		context.Redirect(301, "/challenge/"+challengeId)
+		context.Redirect(302, "/challenge/"+challengeId)
 	})
 
 	router.POST("/comment", func(context *gin.Context) {
@@ -215,7 +219,7 @@ func main() {
 			isOnline = true
 		}
 		if !isOnline {
-			context.Redirect(301, "/signin")
+			context.Redirect(302, "/signin")
 			return
 		}
 		description := context.Request.FormValue("description")
@@ -227,7 +231,7 @@ func main() {
 			Description: description,
 		}
 		CreateComment(token, comment)
-		context.Redirect(301, "/challenge/"+challengeId)
+		context.Redirect(302, "/challenge/"+challengeId)
 	})
 
 	router.Run(":5000")

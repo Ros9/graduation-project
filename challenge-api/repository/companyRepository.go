@@ -58,7 +58,7 @@ func (cr *companyRepository) FindCompanies() ([]*model.Company, error) {
 	q := "select * from companies"
 	rows, err := cr.db.Query(q)
 	if err != nil {
-		fmt.Println("error =", err.Error())
+		fmt.Println("error hererer =", err.Error())
 	}
 	companies := []*model.Company{}
 	for rows.Next() {
