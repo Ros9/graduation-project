@@ -56,6 +56,7 @@ type Company struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
 	Email       string `json:"email"`
+	ImageUrl    string `json:"image_url"`
 }
 
 type Tag struct {

@@ -110,6 +110,29 @@ func CreateChallenge(challenge models.Challenge) (result string, challengeRespon
 	return
 }
 
+func CreateCompany(company models.Company) (result string, companyResponse models.Company) {
+	body, _ := json.Marshal(company)
+
+	resp, err := http.Post(serverUrl+"company/telegram", "application/json", bytes.NewBuffer(body))
+	if err != nil {
+		log.Printf("CreateChallenge | Error: %v", err)
+		return
+	}
+	defer resp.Body.Close()
+	resultCompany := models.Company{}
+	respBody, err := ioutil.ReadAll(resp.Body)
+	json.Unmarshal(respBody, &resultCompany)
+	log.Printf("CreateChallenge | Info: result - %v", resultCompany)
+
+	if resultCompany.Name == company.Name && resultCompany.Description == company.Description {
+		result = "Компания " + resultCompany.Name + " успешно создана!\n(id = \"" + resultCompany.ID + "\")\n\n Вы можете отправить фото для Компании"
+	} else {
+		result = "Error, try again"
+	}
+	companyResponse = resultCompany
+	return
+}
+
 func PostAttachment(objType, challengeId, fileLink string) {
 	attachmentReq := models.AttachmentLinkReq{ExternalId: objType + challengeId, Link: fileLink}
 	body, _ := json.Marshal(attachmentReq)
