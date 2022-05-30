@@ -119,6 +119,12 @@ func (p *Processor) doCmd(text string, chatID int, username string, photoId stri
 		}
 		*commandHistory = append(*commandHistory, commandshistory.CommandHistoryItem{ChatId: chatID, Text: text, User: currentUser})
 		return p.tg.SendMessage(chatID, "Введите данные о челлендже в формате:\n\nCompanyID\nTitle\nDescription\nAnswerCode\nTagsIds (Пример - \"1,2,3\")\nStartDate (Пример - \"2022-01-27\")\nEndDate (Пример - \"2022-01-27\")")
+	case "/createcompany":
+		if currentUser.IsAdmin != 1 {
+			return p.tg.SendMessage(chatID, msgCodeNotFound)
+		}
+		*commandHistory = append(*commandHistory, commandshistory.CommandHistoryItem{ChatId: chatID, Text: text, User: currentUser})
+		return p.tg.SendMessage(chatID, "Введите данные о челлендже в формате:\n\nName\nDescription\nEmail")
 	default:
 
 		//fmt.Println("\n\n\nHandleEventsCOOOOOOOOOMM = ", commandHistory, "\n", *commandHistory, "\n", &commandHistory, "======\n\n\n")
@@ -168,7 +174,44 @@ func (p *Processor) doCmd(text string, chatID int, username string, photoId stri
 				backend.PostAttachment("challenge_", challengeId, fileLink)
 
 				*commandHistory = nil
-				return p.tg.SendMessage(chatID, "/createchallenge/pic")
+				return p.tg.SendMessage(chatID, "Картинка успешно сохранена")
+			case "/createcompany":
+				lines, err := commandshistory.StringToLines(text)
+				if err != nil {
+					return p.tg.SendMessage(chatID, msgCodeNotFound)
+				}
+
+				company := models.Company{
+					Name:        lines[0],
+					Description: lines[1],
+					Email:       lines[2],
+				}
+				fmt.Println("Сompany created:", company)
+
+				result, createdCompany := backend.CreateCompany(company)
+				*commandHistory = append(*commandHistory, commandshistory.CommandHistoryItem{ChatId: chatID, Text: createdCompany.ID, User: currentUser})
+				*commandHistory = append(*commandHistory, commandshistory.CommandHistoryItem{ChatId: chatID, Text: "/createcompany/pic", User: currentUser})
+				//*commandHistory = nil
+				//stop3 Надо везде пихнуть коммандХистори = нил, чтобы если админ не отправил сразу картинку или после
+				//админской команды начал пользоваться другими командами быстро забыть о админских командах
+				return p.tg.SendMessage(chatID, result)
+			case "/createcompany/pic":
+				if text != "" && photoId == "" {
+					*commandHistory = nil
+					return p.tg.SendMessage(chatID, msgCodeNotFound)
+				}
+				fmt.Println("/createcompany/pic -", photoId)
+
+				companyId := history[len(history)-2].Text
+				fileInfo, _ := p.tg.GetFile(photoId)
+				fmt.Println("INTHECOMMANDS createcompany ", fileInfo, " +++++ ", companyId)
+
+				fileLink := p.tg.FileLink(fileInfo)
+				fmt.Println("fileLink:", fileLink)
+				backend.PostAttachment("company_", companyId, fileLink)
+
+				*commandHistory = nil
+				return p.tg.SendMessage(chatID, "Картинка успешно сохранена")
 			default:
 				return p.tg.SendMessage(chatID, msgCodeNotFound)
 			}

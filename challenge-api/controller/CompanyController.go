@@ -2,14 +2,16 @@ package controller
 
 import (
 	"encoding/json"
-	"github.com/gin-gonic/gin"
 	"graduation-project/challenge-api/model"
 	"graduation-project/challenge-api/service"
 	"io/ioutil"
+
+	"github.com/gin-gonic/gin"
 )
 
 type CompanyController interface {
 	CreateCompany() gin.HandlerFunc
+	CreateCompanyByTelegram() gin.HandlerFunc
 	GetCompany() gin.HandlerFunc
 	GetCompanies() gin.HandlerFunc
 	UpdateCompany() gin.HandlerFunc
@@ -25,6 +27,25 @@ func NewCompanyController(companyService service.CompanyService) CompanyControll
 }
 
 func (cc *companyController) CreateCompany() gin.HandlerFunc {
+	return func(context *gin.Context) {
+		jsonData, err := ioutil.ReadAll(context.Request.Body)
+		if err != nil {
+			context.JSON(500, err.Error())
+		}
+		company := &model.Company{}
+		err = json.Unmarshal(jsonData, company)
+		if err != nil {
+			context.JSON(404, err.Error())
+		}
+		createdCompany, err := cc.companyService.CreateCompany(company)
+		if err != nil {
+			context.JSON(404, err.Error())
+		}
+		context.JSON(200, createdCompany)
+	}
+}
+
+func (cc *companyController) CreateCompanyByTelegram() gin.HandlerFunc {
 	return func(context *gin.Context) {
 		jsonData, err := ioutil.ReadAll(context.Request.Body)
 		if err != nil {

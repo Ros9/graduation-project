@@ -15,8 +15,8 @@ import (
 func main() {
 	router := gin.Default()
 
-	//dbConnString := "postgres://postgres:1234@localhost:5432/CityGoDB?sslmode=disable" //Alibi :)
-	dbConnString := "postgres://postgres:@localhost:5432/citygodb?sslmode=disable"
+	dbConnString := "postgres://postgres:1234@localhost:5432/CityGoDB?sslmode=disable" //Alibi :)
+	//dbConnString := "postgres://postgres:@localhost:5432/citygodb?sslmode=disable"
 	dbConnection, err := sql.Open("postgres", dbConnString)
 
 	if err != nil {
@@ -77,6 +77,7 @@ func main() {
 	router.Handle("DELETE", "/user/:id", userController.DeleteUser())
 
 	router.Handle("POST", "/company", companyController.CreateCompany())
+	router.Handle("POST", "/company/telegram", companyController.CreateCompanyByTelegram())
 	router.Handle("GET", "/company/:id", companyController.GetCompany())
 	router.Handle("GET", "/companies", companyController.GetCompanies())
 	router.Handle("PUT", "/company/:id", companyController.UpdateCompany())
