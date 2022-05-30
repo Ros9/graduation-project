@@ -27,16 +27,8 @@ func StringToDateFormat(s string) (date string) {
 	return
 }
 
+//"1,2,3,4"
 func StringToIdList(s string) (ids []string) {
-	prevId := 0
-	for i, v := range s {
-		if v != ',' {
-			continue
-		}
-		ids = append(ids, s[prevId:i])
-		prevId = i + 1
-	}
-
-	//fmt.Println("IDS STRING TO IDS: ", ids)
+	ids = strings.Split(s, ",")
 	return
 }

@@ -3,8 +3,9 @@ package repository
 import (
 	"database/sql"
 	"fmt"
-	"github.com/prometheus/common/log"
 	"graduation-project/challenge-api/model"
+
+	"github.com/prometheus/common/log"
 )
 
 type CompanyRepository interface {
@@ -55,7 +56,7 @@ func (cr *companyRepository) FindCompanyById(companyId string) (*model.Company, 
 }
 
 func (cr *companyRepository) FindCompanies() ([]*model.Company, error) {
-	q := "select * from companies"
+	q := "select * from companies order by id"
 	rows, err := cr.db.Query(q)
 	if err != nil {
 		fmt.Println("error hererer =", err.Error())

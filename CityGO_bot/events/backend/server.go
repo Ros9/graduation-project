@@ -133,6 +133,42 @@ func CreateCompany(company models.Company) (result string, companyResponse model
 	return
 }
 
+func GetCompanies() (companies []models.Company, err error) {
+	resp, err := http.Get(serverUrl + "companies")
+	if err != nil {
+		log.Printf("GetCompanies | Error: %v", err)
+		return
+	}
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+	json.Unmarshal(body, &companies)
+	log.Printf("GetCompanies | Info: user %v found", companies)
+
+	for _, x := range companies {
+		fmt.Println("\n comp ", x)
+	}
+
+	return
+}
+func GetTags() (tags []models.Tag, err error) {
+	resp, err := http.Get(serverUrl + "tags")
+	if err != nil {
+		log.Printf("GetTags | Error: %v", err)
+		return
+	}
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+	json.Unmarshal(body, &tags)
+	log.Printf("GetTags | Info: user %v found", tags)
+
+	for _, x := range tags {
+		fmt.Println("tag ", x)
+	}
+
+	return
+
+}
+
 func PostAttachment(objType, challengeId, fileLink string) {
 	attachmentReq := models.AttachmentLinkReq{ExternalId: objType + challengeId, Link: fileLink}
 	body, _ := json.Marshal(attachmentReq)
