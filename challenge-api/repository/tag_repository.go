@@ -3,8 +3,9 @@ package repository
 import (
 	"database/sql"
 	"fmt"
-	"github.com/prometheus/common/log"
 	"graduation-project/challenge-api/model"
+
+	"github.com/prometheus/common/log"
 )
 
 type TagRepository interface {
@@ -54,7 +55,7 @@ func (tr *tagRepository) FindTagById(tagId string) (*model.Tag, error) {
 }
 
 func (tr *tagRepository) FindTags() ([]*model.Tag, error) {
-	rows, err := tr.db.Query("select * from tags")
+	rows, err := tr.db.Query("select * from tags order by id")
 	if err != nil {
 		return nil, err
 	}

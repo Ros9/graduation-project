@@ -10,6 +10,7 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"strconv"
 	"strings"
 )
 
@@ -117,14 +118,27 @@ func (p *Processor) doCmd(text string, chatID int, username string, photoId stri
 		if currentUser.IsAdmin != 1 {
 			return p.tg.SendMessage(chatID, msgCodeNotFound)
 		}
+
+		responseText := "Введите данные о челлендже в формате:\n\nCompanyID\nTitle\nDescription\nAnswerCode\nTagsIds (Пример - \"1,2,3\")\nStartDate (Пример - \"2022-01-27\")\nEndDate (Пример - \"2022-01-27\")"
+		//получение списка компаниий
+		companies, _ := backend.GetCompanies()
+		responseText += CompanyNamesToString(companies)
+
+		//получение списка тегов
+		tags, _ := backend.GetTags()
+		responseText += TagsTitlesToString(tags)
+
 		*commandHistory = append(*commandHistory, commandshistory.CommandHistoryItem{ChatId: chatID, Text: text, User: currentUser})
-		return p.tg.SendMessage(chatID, "Введите данные о челлендже в формате:\n\nCompanyID\nTitle\nDescription\nAnswerCode\nTagsIds (Пример - \"1,2,3\")\nStartDate (Пример - \"2022-01-27\")\nEndDate (Пример - \"2022-01-27\")")
+		return p.tg.SendMessage(chatID, responseText)
 	case "/createcompany":
 		if currentUser.IsAdmin != 1 {
 			return p.tg.SendMessage(chatID, msgCodeNotFound)
 		}
+
+		responseText := "Введите данные о челлендже в формате:\n\nName\nDescription\nEmail"
+
 		*commandHistory = append(*commandHistory, commandshistory.CommandHistoryItem{ChatId: chatID, Text: text, User: currentUser})
-		return p.tg.SendMessage(chatID, "Введите данные о челлендже в формате:\n\nName\nDescription\nEmail")
+		return p.tg.SendMessage(chatID, responseText)
 	default:
 
 		//fmt.Println("\n\n\nHandleEventsCOOOOOOOOOMM = ", commandHistory, "\n", *commandHistory, "\n", &commandHistory, "======\n\n\n")
@@ -138,16 +152,21 @@ func (p *Processor) doCmd(text string, chatID int, username string, photoId stri
 					return p.tg.SendMessage(chatID, msgCodeNotFound)
 				}
 
+				companyIndex, _ := strconv.Atoi(lines[0])
+				companies, _ := backend.GetCompanies()
+				tags, _ := backend.GetTags()
+				tagIndexes := commandshistory.StringToIdList(lines[4])
+
 				challenge := models.Challenge{
-					CompanyID:   lines[0],
+					CompanyID:   companies[companyIndex-1].ID, //GetCompanyIdByIndex(companies, companyIndex),
 					Title:       lines[1],
 					Description: lines[2],
 					AnswerCode:  lines[3],
-					TagsIds:     commandshistory.StringToIdList(lines[4]),     //ща сделаем через запятые
+					TagsIds:     getTagIdsByIndexes(tags, tagIndexes),         //ща сделаем через запятые
 					StartDate:   commandshistory.StringToDateFormat(lines[5]), //формат нужный
 					EndDate:     commandshistory.StringToDateFormat(lines[6]), //формат нужный
 				}
-				fmt.Println("CHALLENGE CREATE:", challenge)
+				fmt.Println("\n\n\n\n\n===============================================\nCHALLENGE CREATE:", challenge, "\n\n\n\n\n")
 
 				result, createdChallenge := backend.CreateChallenge(challenge)
 				*commandHistory = append(*commandHistory, commandshistory.CommandHistoryItem{ChatId: chatID, Text: createdChallenge.ID, User: currentUser})
@@ -248,4 +267,35 @@ func isAddCmd(text string) bool {
 func isURL(text string) bool {
 	u, err := url.Parse(text)
 	return err == nil && u.Host != ""
+}
+
+func CompanyNamesToString(companies []models.Company) (companyINames string) {
+	companyINames += "\n\nCompanies\n"
+	for idx, c := range companies {
+		companyINames += fmt.Sprintf("\n%d. %s", idx+1, c.Name)
+	}
+	companyINames += "\n\n"
+	return
+}
+
+func TagsTitlesToString(tags []models.Tag) (tagsINames string) {
+	tagsINames += "\n\nTags\n"
+	for idx, c := range tags {
+		tagsINames += fmt.Sprintf("\n%d. %s", idx+1, c.Title)
+	}
+	tagsINames += "\n\n"
+	return
+}
+
+func getTagIdsByIndexes(tags []models.Tag, indexes []string) (ids []string) {
+
+	fmt.Println("getTagIdsByIndexes")
+
+	for _, v := range indexes {
+		intVar, _ := strconv.Atoi(v)
+		ids = append(ids, tags[intVar-1].ID)
+
+		fmt.Println(v, tags[intVar-1].ID, tags[intVar-1].Title)
+	}
+	return
 }
