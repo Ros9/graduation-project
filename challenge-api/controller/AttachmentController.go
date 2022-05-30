@@ -56,14 +56,11 @@ func (ac *attachmentController) UploadAttachmentFromTelegram() gin.HandlerFunc {
 		if err != nil {
 			context.JSON(404, err.Error())
 		}
-		fmt.Println("\n\n\nATTTTTAAACHH ", attachmentLinkReq)
-		//=====================================================
-		// todo@Ros9 Скачать по ссылке и сунуть в бд
-		//=====================================================
+		createdAttachment, err := ac.attachmentService.CreateAttachmentFromTelegram(attachmentLinkReq)
 		if err != nil {
 			context.JSON(404, err.Error())
 		}
-		//context.JSON(200, createdAttachment)
+		context.JSON(200, createdAttachment)
 	}
 }
 

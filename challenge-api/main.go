@@ -5,6 +5,7 @@ import (
 	"graduation-project/challenge-api/controller"
 	"graduation-project/challenge-api/repository"
 	"graduation-project/challenge-api/service"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
@@ -14,14 +15,16 @@ import (
 func main() {
 	router := gin.Default()
 
-	dbConnString := "postgres://postgres:1234@localhost:5432/CityGoDB?sslmode=disable" //Alibi :)
-	//dbConnString := "postgres://postgres:@localhost:5432/citygodb?sslmode=disable"
+	//dbConnString := "postgres://postgres:1234@localhost:5432/CityGoDB?sslmode=disable" //Alibi :)
+	dbConnString := "postgres://postgres:@localhost:5432/citygodb?sslmode=disable"
 	dbConnection, err := sql.Open("postgres", dbConnString)
 
 	if err != nil {
 		log.Error(err.Error())
 	}
 	dbConnection.SetMaxOpenConns(10)
+
+	httpClt := http.DefaultClient
 
 	userRepository := repository.NewUserRepository(dbConnection)
 	companyRepository := repository.NewCompanyRepository(dbConnection)
@@ -37,7 +40,7 @@ func main() {
 	userTagRepository := repository.NewUserTagRepository(dbConnection)
 	userAchievementRepository := repository.NewUserAchievementRepository(dbConnection)
 
-	attachmentService := service.NewAttachmentService(attachmentRepository)
+	attachmentService := service.NewAttachmentService(attachmentRepository, *httpClt)
 	companyService := service.NewCompanyService(companyRepository, attachmentService)
 	userService := service.NewUserService(userRepository, challengeRepository, attachmentService,
 		userAchievementRepository, achievementRepository)
